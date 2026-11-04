@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Working Together</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --bg:#EEF4F2; --paper:#FFFFFF; --ink:#1F2E3A; --muted:#5B6B75;
+  --line:#CFDCD8; --accent:#2F6F62; --accent-soft:#DCEBE6; --sun:#F2C94C;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#131B1F; --paper:#1B252A; --ink:#E6EEEC; --muted:#9AAAB1;
+    --line:#2E3D43; --accent:#7CC3B2; --accent-soft:#233A36; --sun:#E0B83C;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131B1F; --paper:#1B252A; --ink:#E6EEEC; --muted:#9AAAB1;
+  --line:#2E3D43; --accent:#7CC3B2; --accent-soft:#233A36; --sun:#E0B83C;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:400;line-height:1.55;font-size:18px}
+.wrap{max-width:760px;margin:0 auto;padding:2.5rem 1.25rem 4rem}
+header h1{font-weight:500;font-size:clamp(2rem,6vw,2.8rem);line-height:1.1;margin:0 0 .75rem;letter-spacing:-.01em}
+header p{color:var(--muted);margin:.4rem 0;max-width:60ch}
+section{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:1.5rem 1.4rem;margin-top:1.5rem}
+h2{display:flex;align-items:center;gap:.7rem;font-weight:500;font-size:1.3rem;margin:0 0 .35rem}
+h2 .n{flex:none;width:2rem;height:2rem;border-radius:50%;background:var(--accent);color:var(--paper);display:grid;place-items:center;font-size:1rem}
+.hint{color:var(--muted);margin:0 0 1rem;font-size:.95rem}
+label.field{display:block;font-weight:400;margin:1rem 0 .3rem}
+input[type=text],input[type=date],textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:.6rem .75rem}
+textarea{min-height:4.5rem;resize:vertical}
+input:focus-visible,textarea:focus-visible,button:focus-visible,.chip input:focus-visible+span{outline:3px solid var(--sun);outline-offset:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 1rem}
+@media (max-width:560px){.grid2{grid-template-columns:1fr}}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+@media (max-width:560px){.checks{grid-template-columns:1fr}}
+.think{background:var(--accent-soft);border-radius:12px;padding:.8rem 1rem;margin:0 0 .4rem;font-size:.95rem}
+.think ul{margin:0;padding-left:1.1rem}.think li{margin:.2rem 0}
+.grp{margin-top:1.3rem}
+.grp h3{font-size:1rem;font-weight:500;margin:0 0 .5rem;color:var(--accent)}
+.items{display:grid;gap:.5rem}
+.item .note{display:none;margin-top:.35rem;font-size:.92rem}
+.item:has(.check input:checked) .note{display:block}
+.check{display:flex;gap:.7rem;align-items:flex-start;padding:.75rem .85rem;border:1.5px solid var(--line);border-radius:12px;cursor:pointer}
+.check:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.check input{width:1.2rem;height:1.2rem;margin-top:.2rem;accent-color:var(--accent);flex:none}
+.check small{display:block;color:var(--muted);font-size:.85rem}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0}
+.chip span{display:inline-block;padding:.4rem .9rem;border:1.5px solid var(--line);border-radius:999px;cursor:pointer;font-size:.95rem}
+.chip input:checked+span{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.goal{border-top:1px dashed var(--line);padding-top:1rem;margin-top:1rem}
+.goal:first-of-type{border-top:0;margin-top:0;padding-top:0}
+.goal-title{font-weight:500;margin:0}
+.goal-title em{font-style:normal;color:var(--accent)}
+.scale{margin-top:.6rem}
+.scale-row{display:grid;grid-template-columns:repeat(10,1fr);gap:.3rem}
+.scale-row button{font:inherit;font-size:.95rem;padding:.5rem 0;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.scale-row button[aria-pressed="true"]{background:var(--sun);border-color:var(--sun);color:#1F2E3A;font-weight:600}
+.scale-ends{display:flex;justify-content:space-between;color:var(--muted);font-size:.8rem;margin-top:.25rem}
+.sub{font-weight:400;margin:.9rem 0 .4rem;font-size:.95rem}
+.other{margin-top:.5rem}
+.actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:2rem;align-items:center}
+.btn{font:inherit;font-weight:500;padding:.75rem 1.3rem;border-radius:12px;border:0;background:var(--accent);color:var(--paper);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.status{color:var(--muted);font-size:.9rem}
+
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1rem}
+.tabs{display:flex;gap:.3rem;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:.3rem;margin-bottom:1.5rem;position:sticky;top:.5rem;z-index:5}
+.tabs button{flex:1;font:inherit;font-size:.98rem;border:0;background:none;color:var(--muted);padding:.65rem .5rem;border-radius:10px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--paper);font-weight:500}
+.tabs button span{opacity:.85;margin-left:.3rem}
+.link{font:inherit;background:none;border:0;color:var(--accent);cursor:pointer;padding:.3rem 0;font-weight:500}
+.list{list-style:none;padding:0;margin:1.5rem 0 0;display:grid;gap:.6rem}
+.list li button{width:100%;text-align:left;font:inherit;color:var(--ink);background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:1rem 1.2rem;cursor:pointer;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+.list li button:hover{border-color:var(--accent)}
+.list .meta{color:var(--muted);font-size:.85rem;white-space:nowrap}
+.empty{color:var(--muted);margin-top:1.5rem}
+.btn.danger{background:transparent;color:#B3412F;border:1.5px solid var(--line)}
+[hidden]{display:none!important}
+.vis{margin:1rem 0 .4rem}
+.vis-h{font-weight:500;margin:0 0 .45rem}
+.vis-n{font-size:.85rem;color:var(--muted);margin:.35rem 0 0}
+.chart{display:block;max-width:100%;height:auto;overflow:visible;font-family:inherit}
+.chart .hit{cursor:pointer}
+.vleg{display:flex;flex-wrap:wrap;gap:.3rem 1rem;font-size:.82rem;color:var(--muted);margin:0 0 .4rem}
+.vleg span{display:inline-flex;align-items:center;gap:.35rem}
+.vleg i{display:inline-block;width:1.4rem;height:.7rem;border-radius:3px}
+.lg-have{background:var(--accent)}.lg-learn{background:var(--accent-soft);box-shadow:inset 0 0 0 1.5px var(--accent)}
+.lg-early{border:1.5px dashed var(--muted)}.lg-line{height:2px!important;background:var(--accent)}
+.ibar{display:grid;grid-template-columns:6.2rem 1fr;gap:.2rem .7rem;align-items:center;padding:.35rem .5rem;border-radius:10px}
+.ibar.cur{background:var(--bg)}
+.ibar .il{font-size:.88rem;color:var(--muted)}.ibar.cur .il{color:var(--ink);font-weight:500}
+.ibar .it{height:.75rem;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--line)}
+.ibar .it span{display:block;height:100%;background:var(--accent-soft);border-radius:4px}
+.ibar.cur .it span{background:var(--accent)}
+.ibar .iv{grid-column:2;font-size:.82rem;color:var(--muted)}
+.vtl{list-style:none;margin:.2rem 0 0;padding:0 0 0 1.2rem;border-left:2px solid var(--line);margin-left:.4rem}
+.vtl li{position:relative;padding:.1rem 0 .8rem .6rem}
+.vtl .dot{position:absolute;left:-1.62rem;top:.35rem;width:.75rem;height:.75rem;border-radius:50%;background:var(--paper);border:2px solid var(--muted)}
+.vtl li.done .dot{background:var(--accent);border-color:var(--accent)}
+.vtl li.done .vl,.vtl li.done .vd{color:var(--muted)}
+.vtl .vme .dot{background:var(--sun);border-color:var(--sun);width:1rem;height:1rem;left:-1.75rem;top:.2rem}
+.vtl .vl{margin:0;font-weight:500}.vtl .vd{margin:.1rem 0 0;font-size:.92rem}
+.ok{font-size:.75rem;font-weight:400;color:var(--accent);margin-left:.3rem}
+.pchips{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.3rem}
+.pchip{font-size:.85rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.2rem .5rem}
+.pchip em{font-style:normal;color:var(--muted)}
+.vtl li.done .pchip{opacity:.75}
+.stairs{list-style:none;margin:0;padding:0;display:grid;gap:.35rem}
+.stairs li{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-left:calc(var(--i) * min(1.6rem,4%));padding:.5rem .7rem;border-radius:10px;border:1.5px solid var(--line);background:var(--paper)}
+.stairs li.done{background:var(--accent-soft);border-color:transparent}
+.stairs li.cur{border-color:var(--accent)}
+.stairs .sa{font-size:.78rem;font-weight:600;color:var(--accent);min-width:2.6rem}
+.stairs .st{flex:1;min-width:10rem;font-size:.93rem}
+.spec{display:grid;grid-template-columns:1fr 2.2rem 1fr;align-items:center;gap:.5rem}
+.spec>div:not(.sp-arrow){border-radius:12px;padding:.7rem .8rem}
+.sp-a{background:var(--accent-soft)}.sp-b{background:var(--bg);border:1.5px solid var(--line)}
+.spec .vl{margin:0 0 .2rem;font-weight:500}.spec .ex{margin:0;font-size:.88rem;color:var(--muted)}
+.sp-arrow{height:4px;background:linear-gradient(90deg,var(--accent),var(--muted));position:relative;border-radius:2px}
+.sp-arrow::after{content:"";position:absolute;right:-4px;top:-5px;border:7px solid transparent;border-left:8px solid var(--muted)}
+@media (max-width:480px){.spec{grid-template-columns:1fr}.sp-arrow{display:none}}
+.risk{display:flex;flex-wrap:wrap;gap:.4rem}
+.meter{display:flex;gap:4px;margin-top:.7rem}
+.meter span{flex:1;height:.55rem;border-radius:4px;background:var(--bg);border:1px solid var(--line)}
+.meter span.on{background:var(--sun);border-color:var(--sun)}
+
+.norm-age{display:flex;justify-content:space-between;align-items:center;gap:.6rem 1rem;flex-wrap:wrap;background:var(--bg);border-radius:12px;padding:.7rem .9rem;margin-bottom:1rem}
+.norm-age p{margin:0;font-weight:400}
+.norm-age select{font:inherit;color:var(--ink);background:var(--paper);border:1.5px solid var(--line);border-radius:10px;padding:.35rem .5rem;margin-left:.4rem}
+.nchips{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
+.nchip{font:inherit;font-size:.9rem;padding:.4rem .85rem;border-radius:999px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.nchip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.nb{border:1.5px solid var(--line);border-radius:14px;padding:.8rem 1rem;margin-top:.7rem}
+.nb.cur{border-color:var(--accent);background:var(--accent-soft)}
+.nb-l{font-weight:500;margin:0 0 .3rem}
+.nb-l .muted{color:var(--muted);font-weight:300;font-size:.9rem;margin-left:.3rem}
+.nb ul{margin:0;padding-left:1.15rem}.nb li{margin:.15rem 0}
+.here{display:inline-block;font-size:.75rem;font-weight:500;background:var(--accent);color:var(--paper);border-radius:999px;padding:.1rem .55rem;margin-left:.4rem;vertical-align:middle}
+.gone{margin:.55rem 0 0;font-size:.92rem;padding-top:.5rem;border-top:1px dashed var(--line)}
+.flag{margin:.55rem 0 0;font-size:.92rem;background:#FCEFD0;color:#5a4410;border-radius:8px;padding:.45rem .65rem}
+.src{color:var(--muted);font-size:.8rem;margin-top:1rem}
+.tabs{overflow-x:auto}
+.tabs button{flex:1 0 auto;white-space:nowrap}
+@media (max-width:560px){.tabs{gap:.1rem;padding:.25rem}.tabs button{font-size:.8rem;padding:.6rem .4rem}}
+@media (max-width:420px){.tabs button{font-size:.74rem;padding:.55rem .3rem}}
+.prog{margin:.4rem 0 1rem;display:grid;gap:.9rem}
+.prog-row .pt{font-weight:500;margin:0 0 .35rem}
+.pills{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}
+.pill{display:inline-flex;flex-direction:column;align-items:center;min-width:3.4rem;padding:.3rem .5rem;border-radius:10px;background:var(--bg);border:1.5px solid var(--line);line-height:1.15}
+.pill b{font-weight:600;font-size:1.05rem}
+.pill small{font-size:.7rem;color:var(--muted)}
+.pill.latest{background:var(--sun);border-color:var(--sun);color:#1F2E3A}
+.pill.latest small{color:#3d4a52}
+.arrow{color:var(--muted);font-size:.9rem}
+.rv{border:1.5px solid var(--line);border-radius:14px;padding:1rem;margin-top:1rem}
+.rv-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.rv-head input{width:auto}
+.rv-goal{background:var(--bg);border-radius:12px;padding:.75rem .85rem;margin-top:.8rem}
+.rv-goal .gt{font-weight:500;margin:0 0 .2rem}
+.was{font-size:.85rem;color:var(--muted);margin:.35rem 0 0}
+.was b{color:var(--ink);font-weight:500}
+.rv textarea{background:var(--paper);min-height:3.2rem}
+.btn.small{padding:.5rem 1rem;font-size:.92rem}
+.link.del{color:#B3412F;font-weight:400;font-size:.9rem}
+footer{margin-top:2rem;color:var(--muted);font-size:.95rem}
+@media print{
+  :root{--bg:#fff;--paper:#fff;--ink:#000;--muted:#444;--line:#999;--accent:#2F6F62;--accent-soft:#eef}
+  body{font-size:12pt}
+  .actions,.status,.topbar,.tabs{display:none}
+  #tab-q[hidden],#tab-r[hidden]{display:block!important}
+  section{break-inside:avoid;border-radius:6px}
+  .scale-row button[aria-pressed="true"]{background:#ddd}
+}
+
+/* ===== navigation & layout (v14) ===== */
+.apphead svg,.list svg,.pager svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.apphead{position:sticky;top:0;z-index:20;margin:-2.5rem -1.25rem 1.4rem;padding:.7rem 1.25rem 0;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.ah-row{display:flex;align-items:center;gap:.6rem;min-height:3rem}
+.iconbtn{font:inherit;display:inline-flex;align-items:center;justify-content:center;gap:.25rem;min-width:2.6rem;height:2.6rem;padding:0 .45rem;border:0;border-radius:10px;background:none;color:var(--ink);cursor:pointer}
+.iconbtn:hover{background:var(--accent-soft)}
+.iconbtn svg{width:1.3rem;height:1.3rem}
+.iconbtn.back{color:var(--accent);font-weight:500;padding-right:.7rem}
+.ah-who{flex:1;min-width:0;border-left:1px solid var(--line);padding-left:.8rem}
+.ah-name{margin:0;font-weight:500;font-size:1.12rem;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ah-meta{margin:0;font-size:.84rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.apphead .status{font-size:.8rem;white-space:nowrap}
+.apphead .btn.small{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .8rem}
+.apphead .btn.small svg{width:1.05rem;height:1.05rem}
+.menu{position:relative}
+.menu-pop{position:absolute;right:0;top:calc(100% + .3rem);background:var(--paper);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:.35rem;min-width:13rem;z-index:30}
+.menu-pop button{display:block;width:100%;text-align:left;font:inherit;font-size:.95rem;border:0;background:none;padding:.6rem .75rem;border-radius:8px;cursor:pointer;color:#B3412F}
+.menu-pop button:hover,.menu-pop button:focus-visible{background:var(--bg)}
+.tabs{position:static;display:flex;align-items:stretch;gap:.2rem;margin:.5rem 0 0;padding:0;border:0;border-radius:0;background:none;overflow:visible}
+.tabs button{flex:0 0 auto;display:inline-flex;align-items:center;gap:.45rem;font:inherit;font-size:.95rem;color:var(--muted);background:none;border:0;border-radius:0;padding:.65rem .8rem .7rem;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected="true"]{background:none;color:var(--accent);font-weight:500;border-bottom-color:var(--accent)}
+.tabs .ti svg{width:1.2rem;height:1.2rem;display:block}
+.tabs .sh{display:none}
+.tabs .tc{display:inline-grid;place-items:center;min-width:1.15rem;height:1.15rem;padding:0 .3rem;border-radius:999px;font-size:.72rem;font-weight:600;background:var(--accent-soft);color:var(--accent)}
+.tabs .tc:empty{display:none}
+.tabs .tc svg{width:.75rem;height:.75rem;stroke-width:3}
+.tsep{flex:1}
+.intro{background:var(--accent-soft);border-radius:16px;padding:1rem 1.2rem;margin-bottom:.4rem}
+.intro p{margin:0;color:var(--ink);max-width:62ch}
+.intro .intro-h{font-weight:500;font-size:1.1rem;margin-bottom:.3rem}
+.pager{display:flex;justify-content:space-between;align-items:center;gap:.7rem;margin-top:2rem;flex-wrap:wrap}
+.pager .btn{display:inline-flex;align-items:center;gap:.4rem}
+/* home */
+.home-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
+.home-head h1{margin:0}
+.lede{color:var(--muted);margin:.35rem 0 0}
+.search input{width:100%;font:inherit;color:var(--ink);background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:.65rem .9rem}
+.list{margin-top:1rem}
+.list li button{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:.9rem;padding:.9rem 1rem}
+.av{width:2.6rem;height:2.6rem;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:600;font-size:1.1rem}
+.li-main{min-width:0;display:flex;flex-direction:column;gap:.35rem}
+.li-name{font-weight:500;font-size:1.05rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li-age{font-weight:300;color:var(--muted);font-size:.9rem;margin-left:.25rem}
+.li-steps{display:flex;flex-wrap:wrap;gap:.3rem}
+.ps{display:inline-flex;align-items:center;gap:.2rem;font-size:.75rem;padding:.12rem .5rem;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.ps.ok{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+.ps svg{width:.75rem;height:.75rem;stroke-width:3}
+.li-when{font-size:.82rem;color:var(--muted);text-align:right}
+.chev{width:1.1rem;height:1.1rem;color:var(--muted)}
+/* phone: bottom tab bar */
+@media (max-width:640px){
+  .iconbtn.back span{display:none}
+  .iconbtn.back{padding-right:.45rem}
+  .apphead .status{display:none}
+  .apphead{padding-bottom:.5rem;backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
+  .tabs{position:fixed;top:auto;left:0;right:0;bottom:0;z-index:25;margin:0;gap:0;background:var(--paper);border-top:1px solid var(--line);padding:.2rem .25rem calc(.25rem + env(safe-area-inset-bottom,0px));box-shadow:0 -4px 16px rgba(0,0,0,.05)}
+  .tabs button{flex:1 1 0;flex-direction:column;gap:.15rem;font-size:.72rem;padding:.45rem .1rem .35rem;border-bottom:0;border-top:3px solid transparent;position:relative}
+  .tabs button[aria-selected="true"]{border-top-color:var(--accent);border-bottom:0}
+  .tabs .lg{display:none}.tabs .sh{display:inline}
+  .tabs .ti svg{width:1.35rem;height:1.35rem}
+  .tabs .tc{position:absolute;top:.3rem;left:calc(50% + .45rem)}
+  .tsep{display:none}
+  #form{padding-bottom:6rem}
+  .nchips{flex-wrap:nowrap;overflow-x:auto;margin:0 -1.4rem 1rem;padding:0 1.4rem .3rem;scrollbar-width:none}
+  .nchip{flex:0 0 auto}
+  .list li button{grid-template-columns:auto 1fr auto;gap:.75rem}
+  .li-when{grid-column:2;text-align:left;margin-top:-.15rem}
+  .chev{grid-column:3;grid-row:1}
+}
+@media print{.apphead,.pager,.intro{display:none!important}}
+
+.ah-who{display:flex;flex-direction:column;align-items:flex-start;text-align:left;font:inherit;color:inherit;background:none;border:0;border-left:1px solid var(--line);border-radius:0;cursor:pointer;position:relative;padding:.2rem 1.6rem .2rem .8rem}
+.ah-who:hover .ah-name{color:var(--accent)}
+.ah-who .ah-name,.ah-who .ah-meta{display:block;max-width:100%}
+.ah-edit{position:absolute;right:.2rem;top:50%;width:1rem;height:1rem;margin-top:-.5rem;color:var(--muted);opacity:.8}
+.menu-pop button.plain{color:var(--ink)}
+dialog#detailsDlg{border:0;border-radius:18px;padding:0;max-width:min(560px,calc(100vw - 2rem));width:100%;background:var(--paper);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.25)}
+dialog#detailsDlg::backdrop{background:rgba(20,30,35,.45)}
+.dlg{padding:1.2rem 1.3rem 1.3rem}
+.dlg-head{display:flex;justify-content:space-between;align-items:center}
+.dlg-head h2{margin:0}
+.dlg svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+
+.sparts{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.sparts li{background:var(--accent-soft);padding:.6rem .55rem;display:flex;flex-direction:column;gap:.15rem;position:relative}
+.sparts li:first-child{border-radius:12px 0 0 12px}.sparts li:last-child{border-radius:0 12px 12px 0}
+.sp-n{font-size:.72rem;font-weight:600;color:var(--accent)}
+.sp-t{font-weight:500;font-size:.95rem}
+.sp-q{font-size:.8rem;color:var(--muted);line-height:1.3}
+@media (max-width:640px){.sparts{grid-template-columns:1fr 1fr}.sparts li{border-radius:10px!important}}
+.meter.green span.on{background:var(--accent);border-color:var(--accent)}
+
+/* type: Source Serif headings + Source Sans body */
+:root{--serif:"Source Serif 4",Georgia,"Times New Roman",serif}
+h1,h2,.intro-h,.ah-name,.vis-h,.li-name,.dlg-head h2,.nb-l,.goal-title,.prog-row .pt{font-family:var(--serif);font-weight:600;letter-spacing:-.005em}
+h1{font-weight:600}
+.vis-h,.nb-l,.prog-row .pt,.goal-title{font-size:1.04rem}
+.hint,.vis-n,.lede{color:var(--muted)}
+
+/* ===== v18: one-screen sheets ===== */
+:root{--pink:#C2546B;--pink-t:#F6DDE3;--pink-i:#7A2A3B;--blue:#2F6496;--blue-t:#DCE8F4;--blue-i:#1E4468;--green:#2F7A52;--green-t:#DDEFE3;--green-i:#1F5638;--grey:#6B7B84;--grey-t:#E6ECEE;--grey-i:#34434C}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--pink:#E28A9C;--pink-t:#3A252B;--pink-i:#F3C3CD;--blue:#8DB6E0;--blue-t:#1F2D3B;--blue-i:#C5DCF2;--green:#7CC59A;--green-t:#1E3A2B;--green-i:#BFE6CC;--grey:#9AAAB1;--grey-t:#25313A;--grey-i:#D3DCE0}}
+:root[data-theme="dark"]{--pink:#E28A9C;--pink-t:#3A252B;--pink-i:#F3C3CD;--blue:#8DB6E0;--blue-t:#1F2D3B;--blue-i:#C5DCF2;--green:#7CC59A;--green-t:#1E3A2B;--green-i:#BFE6CC;--grey:#9AAAB1;--grey-t:#25313A;--grey-i:#D3DCE0}
+.app{min-height:100vh;display:flex;flex-direction:column}
+.app[hidden]{display:none!important}
+.hdr svg,.sheetpage svg,.g-top svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.hdr{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:.6rem;padding:.45rem 1.1rem;background:var(--bg);border-bottom:1px solid var(--line);min-height:3.6rem}
+.hdr .ah-who{flex:0 1 auto;min-width:0}
+.hdr .status{font-size:.8rem;white-space:nowrap;color:var(--muted);min-width:3.5rem;text-align:right}
+.hdr .btn.small{display:inline-flex;align-items:center;gap:.35rem;padding:.42rem .8rem}
+.hdr .btn.small svg{width:1.05rem;height:1.05rem}
+.seg{margin-left:auto;display:flex;gap:2px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{display:inline-flex;align-items:center;gap:.4rem;font:inherit;font-size:.92rem;color:var(--muted);background:none;border:0;border-radius:9px;padding:.42rem .75rem;cursor:pointer;white-space:nowrap}
+.seg button:hover{color:var(--ink);background:var(--bg)}
+.seg button[aria-selected="true"]{background:var(--accent);color:var(--paper);font-weight:600}
+.seg .ti{display:none}.seg .ti svg{width:1.3rem;height:1.3rem;display:block}
+.seg .sh{display:none}
+.seg .lg b{font-weight:600;opacity:.75;margin-right:.1rem}
+.seg .tc{display:inline-grid;place-items:center;min-width:1.1rem;height:1.1rem;padding:0 .3rem;border-radius:999px;font-size:.7rem;font-weight:600;background:var(--accent-soft);color:var(--accent)}
+.seg button[aria-selected="true"] .tc{background:rgba(255,255,255,.25);color:var(--paper)}
+.seg .tc:empty{display:none}.seg .tc svg{width:.72rem;height:.72rem;stroke-width:3}
+/* sheets */
+.sheetpage{flex:1;display:flex;flex-direction:column;gap:.55rem;padding:.75rem 1.1rem 1rem;max-width:1500px;width:100%;margin:0 auto;box-sizing:border-box}
+.sheetpage[hidden]{display:none}
+.sh-title{font-size:1.4rem;margin:0;line-height:1.2}
+.sh-sub{font-family:"Source Sans 3",system-ui,sans-serif;font-weight:400;font-size:.9rem;color:var(--muted);margin-left:.5rem}
+.sheet{display:grid;gap:.55rem;flex:1;min-height:0}
+.band{display:grid;grid-template-columns:2.1rem 1fr;gap:.55rem;min-height:0}
+.lab{border-radius:10px;color:#fff;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.82rem;text-align:center;line-height:1.1;padding:.3rem 0}
+.pink .lab{background:var(--pink)}.blue .lab{background:var(--blue)}.green .lab{background:var(--green)}.grey .lab{background:var(--grey)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .lab{color:#14202A}}
+.boxes{display:grid;grid-template-columns:var(--cols,1fr);gap:.55rem;min-height:0}
+.box{border-radius:12px;border:2px solid var(--line);display:flex;flex-direction:column;min-height:0;overflow:hidden;background:var(--paper);position:relative}
+.box>label,.box>.bl{display:block;margin:0;padding:.3rem .7rem;font-weight:600;font-size:.86rem;text-align:center;line-height:1.25}
+.box textarea{flex:1;min-height:3.2rem;width:100%;border:0;border-radius:0;background:transparent;resize:none;padding:.45rem .7rem;font:inherit;font-size:.95rem;line-height:1.4;color:var(--ink)}
+.box textarea:focus-visible{outline:none;background:color-mix(in srgb,var(--sun) 10%,transparent)}
+.box:focus-within{box-shadow:0 0 0 2px var(--sun)}
+.box textarea::placeholder{color:#9AA7AE}
+.pink .box,.box.pink{border-color:var(--pink-t)}.pink .box>label,.box.pink>label,.box.pink>.bl{background:var(--pink-t);color:var(--pink-i)}
+.blue .box,.box.blue{border-color:var(--blue-t)}.blue .box>label,.box.blue>label,.box.blue>.bl{background:var(--blue-t);color:var(--blue-i)}
+.green .box,.box.green{border-color:var(--green-t)}.green .box>label,.box.green>label,.box.green>.bl{background:var(--green-t);color:var(--green-i)}
+.grey .box{border-color:var(--grey-t)}.grey .box>label{background:var(--grey-t);color:var(--grey-i)}
+.tip{font-size:.75rem;color:var(--muted);padding:0 .7rem .35rem;margin:0}
+.areas{display:flex;flex-wrap:wrap;gap:.25rem;padding:.1rem .6rem .5rem}
+.areas .chip span{font-size:.76rem;padding:.12rem .55rem}
+.chips.pad{padding:.5rem .7rem;gap:.35rem}
+.chips.pad .chip span{font-size:.85rem;padding:.25rem .7rem}
+.fam-grid{grid-template-columns:1fr 1fr 1.15fr;grid-template-rows:1fr 1fr}
+.fam-grid .famb,.fam-grid .kid{grid-row:span 2}
+.oval{flex:1;display:flex;padding:.45rem .6rem .6rem;min-height:0}
+.oval textarea{background:var(--blue-t);border-radius:50%;text-align:center;padding:1.4rem 1.6rem;display:block}
+.roles-h{margin:.1rem 0 0;font-family:var(--serif);font-weight:600;color:var(--blue);font-size:1rem}
+/* desktop single-screen grid rows */
+.s1{grid-template-rows:1.25fr 1.35fr .9fr .55fr}
+.s2{grid-template-rows:.85fr auto 1.4fr auto .62fr}
+.s3{grid-template-rows:.62fr 1fr auto 1.15fr 1fr}
+@media (min-width:1000px) and (min-height:600px){
+  .app{height:100vh;min-height:0;overflow:hidden}
+  .sheetpage{min-height:0;overflow-y:auto}
+  .normpage{flex:1;overflow-y:auto}
+}
+@media (max-width:999px),(max-height:599px){
+  .sheet{grid-template-rows:none!important;display:flex;flex-direction:column}
+  .box textarea{min-height:5.5rem}
+  .oval textarea{min-height:8rem}
+}
+@media (max-width:760px){
+  .boxes,.fam-grid{grid-template-columns:1fr!important;grid-template-rows:none}
+  .fam-grid .famb,.fam-grid .kid{grid-row:auto}
+  .band{grid-template-columns:1fr}
+  .lab{writing-mode:horizontal-tb;transform:none;padding:.35rem .7rem;justify-content:flex-start}
+}
+/* goal sheet */
+.g-top{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.gchips{display:flex;gap:.3rem;flex-wrap:wrap;align-items:center}
+.gchip{font:inherit;font-size:.85rem;padding:.28rem .75rem;border-radius:999px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;max-width:16rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gchip[aria-pressed="true"]{border-color:var(--pink);background:var(--pink-t);color:var(--pink-i);font-weight:600}
+.gchip.add{border-style:dashed;color:var(--muted)}
+.gchip .ok{color:var(--green);font-weight:700;margin-right:.2rem}
+.g-tools{margin-left:auto;display:flex;gap:1rem}
+.link.small{font-size:.88rem;font-weight:400}
+.link.danger{color:#B3412F}
+.goalbox{flex-direction:row}
+.goalbox>.gl{display:flex;flex-direction:column;justify-content:center;width:7.6rem;flex:none;padding:.5rem .7rem;background:var(--pink-t);color:var(--pink-i);font-weight:600;font-size:.86rem;line-height:1.2;text-align:left}
+.goalbox>.gl b{font-size:1rem;letter-spacing:.04em}
+.goalbox textarea{font-size:1.08rem;font-weight:600;display:flex}
+.gline{display:flex;align-items:center;gap:.7rem;font-weight:600;color:var(--blue);font-size:.9rem;padding:.1rem .2rem}
+.gline select{font:inherit;font-size:.8rem;font-weight:400;padding:.1rem .2rem;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);margin-left:.35rem}
+.gtrack{flex:1;position:relative;height:18px}
+.gtrack:before{content:"";position:absolute;left:0;right:8px;top:8px;height:3px;background:var(--blue);border-radius:2px}
+.gtrack:after{content:"";position:absolute;right:0;top:3px;border:6px solid transparent;border-left:9px solid var(--blue)}
+.gdot{position:absolute;top:3px;width:13px;height:13px;border-radius:50%;background:var(--blue);border:2px solid var(--paper);margin-left:-6px}
+.gdot.b{background:var(--paper);border:2.5px solid var(--muted)}
+.gdot.n{background:var(--sun);width:18px;height:18px;top:0;margin-left:-9px;border-color:var(--paper)}
+.smart{margin:.1rem .7rem .55rem;font-size:.88rem;background:var(--bg);border-radius:8px;padding:.35rem .6rem;display:flex;flex-wrap:wrap;align-items:center;gap:.25rem .35rem}
+.smart input{font:inherit;font-size:.88rem;border:0;border-bottom:1.5px solid var(--muted);border-radius:0;background:transparent;padding:.05rem .2rem;color:var(--ink);min-width:6rem}
+.smart input[type=date]{min-width:0}
+.smart input.w{flex:1 1 12rem}
+.smart-tog{font:inherit;font-size:.8rem;border:0;background:none;color:var(--accent);cursor:pointer;padding:.1rem .7rem .45rem;text-align:left}
+.cirow{display:grid;grid-template-columns:9rem 1fr 1fr;gap:.55rem;min-height:0}
+.cil{background:var(--green);color:#fff;border-radius:12px;padding:.6rem .7rem;font-size:.8rem;font-weight:600;display:flex;flex-direction:column;gap:.3rem;line-height:1.25}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cil{color:#14202A}}
+.cil b{font-size:.95rem}
+.cil .q{font-weight:400;opacity:.92}
+.cil button{margin-top:auto;font:inherit;font-size:.85rem;font-weight:600;border:0;border-radius:8px;padding:.4rem .5rem;background:rgba(255,255,255,.92);color:var(--green-i);cursor:pointer}
+.cipg{display:flex;justify-content:space-between;gap:.3rem}
+.cipg button{margin:0;padding:.2rem .45rem;font-size:.75rem;background:rgba(255,255,255,.25);color:inherit}
+.cipg button:disabled{opacity:.35;cursor:default}
+.ci .cih{display:flex;align-items:center;gap:.5rem;padding:.25rem .5rem .25rem .7rem;background:var(--green-t);color:var(--green-i);font-weight:600;font-size:.86rem}
+.ci .cih input,.ci .cih select{font:inherit;font-size:.82rem;border:1px solid transparent;border-radius:6px;background:rgba(255,255,255,.6);color:var(--ink);padding:.05rem .3rem}
+.ci .cih .x{margin-left:auto;border:0;background:none;color:var(--green-i);cursor:pointer;font-size:1.1rem;line-height:1;padding:0 .2rem;opacity:.7}
+.ci.empty{border-style:dashed;align-items:center;justify-content:center;color:var(--muted);font-size:.88rem;text-align:center;padding:1rem}
+@media (max-width:760px){.cirow{grid-template-columns:1fr}}
+/* milestones page */
+.normpage{padding:1rem 1.1rem 2rem}
+.normpage[hidden]{display:none}
+.normwrap{max-width:820px;margin:0 auto;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:1.3rem 1.2rem}
+.normwrap h2{margin:0 0 .3rem}
+/* phone: bottom bar */
+@media (max-width:1100px){.seg .lg b{display:none}.seg button{padding:.42rem .55rem}}
+@media (max-width:900px){
+  .hdr{flex-wrap:wrap}
+  .seg{order:5;margin-left:0;width:100%;justify-content:space-between}
+  .seg button{flex:1;justify-content:center}
+}
+@media (max-width:640px){
+  .iconbtn.back span{display:none}
+  .hdr .status{display:none}
+  .hdr .ah-who{flex:1}
+  .hdr{padding:.35rem .6rem .45rem;gap:.4rem}
+  .seg{gap:2px;padding:3px}
+  .seg button{flex-direction:column;gap:.05rem;font-size:.74rem;padding:.35rem .1rem .3rem;position:relative}
+  .seg .ti{display:block}.seg .ti svg{width:1.2rem;height:1.2rem}.seg .lg{display:none}.seg .sh{display:inline}
+  .seg .tc{position:absolute;top:.15rem;left:calc(50% + .4rem)}
+  .sheetpage{padding:.6rem .7rem 1.5rem}
+}
+}
+@media print{.hdr,.g-tools,.smart-tog,.cil button{display:none!important}}
+
+.sheetpage,.normpage{background:none;border:0;border-radius:0;margin-top:0}
+.sheetpage{padding:.75rem 1.1rem 1rem}
+.smart input{width:auto}.smart input[type=date]{width:9.6rem;flex:none}
+.ci .cih input[type=date]{width:8.6rem;flex:none}
+.ci .cih{flex-wrap:nowrap;white-space:nowrap}
+.ci .cih label{display:inline-flex;align-items:center;gap:.25rem;font-weight:600}
+.ci .cih select{width:auto}
+
+@media (max-height:800px){.cil .q{display:none}.sh-title{font-size:1.25rem}.sheetpage{gap:.45rem;padding-top:.55rem}.sheet{gap:.45rem}.boxes{gap:.45rem}}
+@media (min-width:1000px) and (min-height:600px){.s3 .box textarea,.s1 .box textarea,.s2 .box textarea{min-height:2.2rem}}
+@media (max-width:760px){.gline{flex-wrap:wrap;row-gap:.3rem}.gline .gtrack{order:3;flex-basis:100%}}
+
+dialog#askDlg{border:0;border-radius:16px;padding:0;max-width:min(440px,calc(100vw - 2rem));width:100%;background:var(--paper);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.25)}
+dialog#askDlg::backdrop{background:rgba(20,30,35,.45)}
+.btn.danger-solid{background:#B3412F;color:#fff}
+
+.bg-grid{grid-template-columns:repeat(6,1fr)}
+@media (max-width:1249px){.areas .chip span{font-size:.7rem;padding:.06rem .45rem}.bg-grid{grid-template-columns:repeat(3,1fr)}.s1{grid-template-rows:1.2fr 1.3fr .85fr .95fr}}
+
+/* prompts */
+.box>label,.box>.bl{padding-left:1.9rem;padding-right:1.9rem}
+.pq{position:absolute;top:.2rem;right:.35rem;width:1.35rem;height:1.35rem;border-radius:50%;border:1.5px solid currentColor;background:var(--paper);color:var(--muted);font:600 .78rem/1 "Source Sans 3",system-ui,sans-serif;cursor:pointer;display:grid;place-items:center;padding:0;opacity:.75;z-index:2}
+.pq:hover,.pq.on{opacity:1;color:var(--accent);border-color:var(--accent)}
+.pq.on{background:var(--accent);color:var(--paper)}
+.pink .pq,.pq[data-p=goal],.pq[data-p=words]{color:var(--pink-i)}
+.goalbox .pq{right:.4rem;top:.4rem}
+.gline .pq{position:static;flex:none}
+.cil .pq{position:static;display:inline-grid;vertical-align:middle;margin-left:.3rem;background:transparent;color:#fff;border-color:rgba(255,255,255,.8);opacity:1}
+.pop{position:fixed;z-index:60;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.18);padding:.75rem .9rem .8rem;max-height:min(70vh,520px);overflow:auto;font-size:.92rem;line-height:1.4}
+.pop[hidden]{display:none}
+.pop-h{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.3rem}
+.pop-h b{font-family:var(--serif);font-weight:600;font-size:1rem}
+.pop-x{border:0;background:none;font-size:1.3rem;line-height:1;color:var(--muted);cursor:pointer;padding:0 .2rem}
+.pop-c{margin:0 0 .5rem;color:var(--muted);font-style:italic;background:var(--bg);border-radius:8px;padding:.45rem .6rem}
+.pop-sh{margin:.5rem 0 .1rem;font-weight:600;font-size:.85rem;color:var(--accent)}
+.pop ul{margin:.2rem 0 .3rem;padding-left:1.1rem}.pop li{margin:.22rem 0}
+.cil .pq{border:1.5px solid rgba(255,255,255,.85);margin-top:0;padding:0;width:1.35rem;height:1.35rem;border-radius:50%;font-size:.78rem;font-weight:600;background:transparent;color:#fff}
+.cil .pq.on{background:#fff;color:var(--green-i)}
+
+.appname{margin:0 0 .1rem;font-weight:600;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.localnote{background:var(--accent-soft);border-radius:12px;padding:.7rem .9rem;font-size:.92rem;margin:.2rem 0 .6rem}
+.localnote b{font-weight:600}
+.backup{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem 1.2rem;margin-top:1.4rem;padding-top:1rem;border-top:1px solid var(--line)}
+.backup label.link{cursor:pointer}
+</style>
+</head>
+<body>
+<main class="wrap" id="home">
+  <header class="home-head">
+    <div><p class="appname">Working Together</p><h1>Clients</h1><p class="lede">One file per child: getting to know you, working together, and goals with check-ins.</p></div>
+    <button class="btn" type="button" id="newBtn">+ New client</button>
+  </header>
+  <div class="localnote" id="localNote" hidden><b>Saved in this browser only.</b> Client files stay on this device and aren't uploaded anywhere. Back up now and then, and use Restore to move them to another device.</div>
+  <div class="search" id="searchWrap" hidden><input type="search" id="search" placeholder="Search by name" aria-label="Search clients"></div>
+  <ul class="list" id="list"></ul>
+  <p class="empty" id="empty" hidden>No clients yet. Tap <b>+ New client</b> to start the first file.</p>
+  <p class="empty" id="noMatch" hidden>No clients match that search.</p>
+  <div class="backup"><button type="button" class="link small" id="backupBtn">Back up all clients</button><label class="link small" for="restoreFile">Restore from backup</label><input type="file" id="restoreFile" accept=".json,application/json" hidden><span class="status" id="homeStatus" aria-live="polite"></span></div>
+</main>
+
+<div class="app" id="form" hidden>
+  <header class="hdr">
+    <button class="iconbtn back" type="button" id="backBtn" aria-label="Back to all clients"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Clients</span></button>
+    <button type="button" class="ah-who" id="ahWho" aria-label="Edit client details"><span class="ah-name" id="ahName">New client</span><span class="ah-meta" id="ahMeta"></span><svg class="ah-edit" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg></button>
+    <nav class="seg" role="tablist" aria-label="Client file sections">
+      <button type="button" role="tab" data-tab="q" aria-selected="true" aria-controls="tab-q"><span class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c.7-3 3-4.5 5.5-4.5s4.8 1.5 5.5 4.5"/><circle cx="17" cy="9" r="2.2"/><path d="M15.5 14.6c2.3-.3 4.3.9 5 3.4"/></svg></span><span class="lg"><b>1</b> Getting to know you</span><span class="sh">About</span><span class="tc" id="tc-q"></span></button>
+      <button type="button" role="tab" data-tab="w" aria-selected="false" aria-controls="tab-w"><span class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l4-4 4 3 4-3 4 4"/><path d="M8 8l4 9 4-9"/></svg></span><span class="lg"><b>2</b> Working together</span><span class="sh">Together</span><span class="tc" id="tc-w"></span></button>
+      <button type="button" role="tab" data-tab="g" aria-selected="false" aria-controls="tab-g"><span class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/></svg></span><span class="lg"><b>3</b> Goals</span><span class="sh">Goals</span><span class="tc" id="tc-g"></span></button>
+      <button type="button" role="tab" data-tab="m" aria-selected="false" aria-controls="tab-m"><span class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20v-8"/><path d="M12 12c0-3 2-5 5-5 0 3-2 5-5 5z"/><path d="M12 14c0-2.5-1.7-4-4-4 0 2.5 1.7 4 4 4z"/><path d="M8 20h8"/></svg></span><span class="lg">Milestones</span><span class="sh">Milestones</span></button>
+    </nav>
+    <span class="status" id="status" aria-live="polite"></span>
+    <button class="btn small ghost" type="button" id="printBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>PDF</button>
+    <div class="menu"><button class="iconbtn" type="button" id="moreBtn" aria-haspopup="true" aria-expanded="false" aria-label="More options"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg></button>
+      <div class="menu-pop" id="morePop" role="menu" hidden><button type="button" role="menuitem" id="editBtn" class="plain">Edit client details</button><button type="button" role="menuitem" id="delBtn">Delete this client file</button></div></div>
+  </header>
+
+  <!-- SHEET 1 -->
+  <section class="sheetpage" id="tab-q" role="tabpanel">
+    <h1 class="sh-title">Getting to know you and your family <span class="sh-sub">Fill in together at the first session</span></h1>
+    <div class="sheet s1">
+      <div class="band pink"><div class="lab">What's important to you?</div>
+        <div class="boxes" style="--cols:2fr 1fr">
+          <div class="box"><label for="f-brings" data-pk="brings">What brings you in today?</label><textarea id="f-brings" data-k="brings" placeholder="In the family's words"></textarea>
+            <div class="areas" id="areas" aria-label="Areas of concern"></div></div>
+          <div class="box"><label for="f-hopes" data-pk="hopes">What would you love to see change?</label><textarea id="f-hopes" data-k="hopes" placeholder="What would tell you therapy is working?"></textarea></div>
+        </div></div>
+      <div class="band blue"><div class="lab">About you and your family</div>
+        <div class="boxes fam-grid">
+          <div class="box famb"><label for="f-family" data-pk="family">Who is in your family?</label><div class="oval"><textarea id="f-family" data-k="family" placeholder="Living with you, or in other places"></textarea></div></div>
+          <div class="box"><label for="f-culture" data-pk="culture">Family and culture</label><textarea id="f-culture" data-k="culture" placeholder="What should we know about your family's culture?"></textarea></div>
+          <div class="box kid"><label for="f-child" data-pk="child">What should we know about your child?</label><textarea id="f-child" data-k="strengths" placeholder="Loves, interests, strengths, how they learn best"></textarea><p class="tip">Interests feed into child-led goals.</p></div>
+          <div class="box"><label for="f-langs" data-pk="langs">Languages at home</label><textarea id="f-langs" data-k="langs" placeholder="Which languages, who uses them, which is strongest"></textarea></div>
+        </div></div>
+      <div class="band green"><div class="lab">How we fit in</div>
+        <div class="boxes" style="--cols:1.3fr 1fr 1fr">
+          <div class="box"><label for="f-week" data-pk="week">What does your week look like? Your child's week?</label><textarea id="f-week" data-k="week" placeholder="Kindy or school days, activities, work hours"></textarea></div>
+          <div class="box"><label for="f-people" data-pk="people">Who do you see during the week?</label><textarea id="f-people" data-k="people" placeholder="Family, educators, other professionals"></textarea></div>
+          <div class="box"><label for="f-services" data-pk="services">Other services or supports you're looking for?</label><textarea id="f-services" data-k="services" placeholder="e.g. playgroups, parent support, OT"></textarea></div>
+        </div></div>
+      <div class="band grey"><div class="lab">Background</div>
+        <div class="boxes bg-grid">
+          <div class="box"><label for="f-bgdx" data-pk="diag">Diagnoses</label><textarea id="f-bgdx" data-k="bgDiag" placeholder="e.g. ASD, ADHD, DLD: who diagnosed, when"></textarea></div>
+          <div class="box"><label for="f-bgh">Health, hearing, vision</label><textarea id="f-bgh" data-k="bgHealth" placeholder="Birth, medical, ear infections, hearing tests"></textarea></div>
+          <div class="box"><label for="f-bgd">Development</label><textarea id="f-bgd" data-k="bgDev" placeholder="First words, motor milestones"></textarea></div>
+          <div class="box"><label for="f-bgf">Feeding and sleep</label><textarea id="f-bgf" data-k="bgFeed" placeholder="Eating, drinking, sleep, routines"></textarea></div>
+          <div class="box"><label for="f-bgs">Kindy / school</label><textarea id="f-bgs" data-k="bgSchool" placeholder="Where, how many days, teacher concerns"></textarea></div>
+          <div class="box"><label for="f-bgt" data-pk="past">Previous therapy</label><textarea id="f-bgt" data-k="bgTherapy" placeholder="Speech, OT, psych: who, when, what helped"></textarea></div>
+        </div></div>
+    </div>
+  </section>
+
+  <!-- SHEET 2 -->
+  <section class="sheetpage" id="tab-w" role="tabpanel" hidden>
+    <h1 class="sh-title">Our goals and how we will work together</h1>
+    <div class="sheet s2">
+      <div class="boxes" style="--cols:2fr 1fr 1fr">
+        <div class="box pink"><label for="f-service" data-pk="service">What happens in our service</label><textarea id="f-service" data-k="service" placeholder="Session format, how often, how long, what happens between sessions"></textarea></div>
+        <div class="box pink"><label for="f-contact">Speech pathologist contact</label><textarea id="f-contact" data-k="contact" placeholder="Name, phone, email"></textarea></div>
+        <div class="box pink"><label for="f-appts">Appointments we'll book in</label><textarea id="f-appts" data-k="appointments" placeholder="Day, time, start date"></textarea></div>
+      </div>
+      <p class="roles-h">Working as a team in and out of sessions, our roles are:</p>
+      <div class="boxes" style="--cols:1fr 1fr 1fr">
+        <div class="box blue"><label for="f-rt" data-pk="roles">Therapist</label><textarea id="f-rt" data-k="roleTherapist"></textarea></div>
+        <div class="box blue"><label for="f-rc" data-pk="roles">Caregivers</label><textarea id="f-rc" data-k="roleCaregivers"></textarea></div>
+        <div class="box blue"><label for="f-ro" data-pk="roles">Others</label><textarea id="f-ro" data-k="roleOthers" placeholder="e.g. grandparents, educators"></textarea></div>
+      </div>
+      <div class="boxes" style="--cols:1fr 1fr">
+        <div class="box blue"><span class="bl">How would you like to be part of sessions?</span><div class="chips pad" id="involve"></div></div>
+        <div class="box blue"><span class="bl">Good times of day for practising</span><div class="chips pad" id="routines"></div></div>
+      </div>
+      <div class="box green"><label for="f-check" data-pk="checkPlan">Our plan for checking in</label><textarea id="f-check" data-k="checkPlan" placeholder="When and how we'll check in, e.g. every 5 weeks in session"></textarea></div>
+    </div>
+  </section>
+
+  <!-- SHEET 3 -->
+  <section class="sheetpage" id="tab-g" role="tabpanel" hidden>
+    <div class="g-top"><h1 class="sh-title" style="margin:0">Goal</h1><div class="gchips" id="gchips"></div>
+      <span class="g-tools"><button type="button" class="link small" id="gDone"></button><button type="button" class="link small danger" id="gDel">Remove goal</button></span></div>
+    <div class="sheet s3" id="goalSheet"></div>
+  </section>
+
+  <!-- MILESTONES -->
+  <section class="normpage" id="tab-m" role="tabpanel" hidden>
+    <div class="normwrap">
+    <h2>Is this normal?</h2>
+    <p class="hint">What most children are doing at each age. Every child develops at their own pace, so use this as a guide, not a diagnosis.</p>
+    <div class="norm-age"><p id="normWho"></p><label>Compare at <select id="normAge"></select></label></div>
+    <div class="nchips" id="normChips"></div>
+    <div id="normBody"></div>
+    </div>
+  </section>
+
+  <div id="pop" class="pop" role="dialog" aria-label="Conversation prompts" hidden></div>
+  <dialog id="askDlg" aria-labelledby="askMsg">
+    <form method="dialog" class="dlg"><p id="askMsg" style="margin:.2rem 0 1.1rem;font-size:1.02rem"></p>
+      <div class="pager" style="margin-top:0;justify-content:flex-end"><button class="btn ghost" value="no">Cancel</button><button class="btn danger-solid" value="yes" id="askOk">Delete</button></div></form>
+  </dialog>
+  <dialog id="detailsDlg" aria-labelledby="dlgH">
+    <form method="dialog" class="dlg">
+      <div class="dlg-head"><h2 id="dlgH">Client details</h2><button class="iconbtn" value="close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <div class="grid2">
+        <div><label class="field" for="d-childName">Child's name</label><input type="text" id="d-childName" data-k="childName" autocomplete="off"></div>
+        <div><label class="field" for="d-dob">Date of birth</label><input type="date" id="d-dob" data-k="dob"></div>
+        <div><label class="field" for="d-filledBy">Respondent</label><input type="text" id="d-filledBy" data-k="filledBy" autocomplete="off"></div>
+        <div><label class="field" for="d-relation">Relationship to child</label><input type="text" id="d-relation" data-k="relation" placeholder="e.g. Mum, Dad, grandparent"></div>
+        <div><label class="field" for="d-date">Initial assessment date</label><input type="date" id="d-date" data-k="date"></div>
+      </div>
+      <p class="hint" style="margin:1rem 0 0">Changes save as you type.</p>
+      <div class="pager" style="margin-top:1rem"><span></span><button class="btn" value="close">Done</button></div>
+    </form>
+  </dialog>
+</div>
+
+<script>
+const help=[
+ ['Talking clearly so others can understand','Family or teachers can\'t always understand them; some sounds are tricky (like "s", "r" or "th"); they get upset when people say "what?"'],
+ ['Understanding what others say','Answering questions; following stories or what the teacher says; taking things literally or missing jokes and sarcasm'],
+ ['Following instructions','"Get your shoes and hat"; classroom instructions with a few steps; forgetting part of what was asked'],
+ ['Making friends and joining in play','Joining a game; taking turns; keeping a conversation going; sorting out misunderstandings with friends'],
+ ['Asking for things and sharing ideas','"More juice, please"; telling you about their day; explaining what happened; retelling a story in order'],
+ ['Using words to show feelings, instead of behaviour','Saying "I\'m angry" or "I need a break" instead of hitting, crying or shutting down; telling you what\'s wrong'],
+ ['Talking smoothly without getting stuck on words','Repeating sounds ("b-b-ball"), stretching sounds ("sssun"), getting stuck with no sound coming out; avoiding words or situations'],
+ ['Feeling confident talking with new people','Ordering food; answering the teacher; talking to relatives or on the phone; speaking up in a group'],
+ ['Using pictures, signs or a talking device','Pointing to pictures to choose; using key word signs; using a speech app or device'],
+ ['Reading, spelling or sounding out words','Sounding out new words; remembering spelling patterns; reading smoothly; understanding what they read; writing ideas down'],
+ ['Eating and drinking safely','Coughing or choking at meals; trouble chewing; a very small range of foods; lots of drooling'],
+ ['Voice (how it sounds)','Hoarse or croaky voice; very loud or very quiet; losing their voice often']
+];
+const helpShort=['Being understood','Understanding','Following instructions','Friends and play','Asking and sharing ideas','Words for feelings','Smooth talking','Confidence talking','Pictures, signs or device','Reading and spelling','Eating and drinking','Voice'];
+const groups=[['Talking and being understood',[0,6,11]],['Understanding',[1,2]],['Expressing ideas and feelings',[4,5]],['Friends and confidence',[3,7]],['Other ways to communicate',[8]],['Reading and writing',[9]],['Eating and drinking',[10]]];
+const helpOrder=groups.flatMap(g=>g[1]);
+const routines=['Mealtimes','Bath time','Bedtime','Playtime','Car trips and outings','School drop-off or pick-up'];
+const involve=['Watch and see what we do','Take turns doing activities with your child','Get ideas to practise at home','Have things explained as we go'];
+const places=['Home','Childcare/school','With friends','Everywhere'];
+const $=s=>document.querySelector(s);
+const has=v=>v!=null&&String(v).trim()!=='';
+const escH=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+const shortDate=v=>{if(!v)return'';const d=new Date(v+'T00:00:00');return isNaN(d)?v:d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});};
+function fmtDate(v){if(!v)return'';const d=new Date(v+'T00:00:00');return isNaN(d)?v:d.toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});}
+function fmt(ts){if(!ts)return'';const d=new Date(ts);return d.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});}
+const clone=o=>JSON.parse(JSON.stringify(o||{}));
+
+$('#areas').innerHTML=helpOrder.map(i=>`<label class="chip" title="${escH(help[i][0]+'. e.g. '+help[i][1])}"><input type="checkbox" data-k="help${i}"><span>${escH(helpShort[i])}</span></label>`).join('');
+const chipSet=(id,arr,key)=>$(id).innerHTML=arr.map((t,i)=>`<label class="chip"><input type="checkbox" data-k="${key}${i}"><span>${t}</span></label>`).join('');
+chipSet('#routines',routines,'routine');chipSet('#involve',involve,'involve');
+
+// ---------- storage ----------
+const LOCAL='tellUsAboutYourChild.forms.v2';
+let col=null;
+const local={
+  all(){try{return JSON.parse(localStorage.getItem(LOCAL)||'{}')}catch(e){return {}}},
+  put(id,d){try{const a=this.all();a[id]=d;localStorage.setItem(LOCAL,JSON.stringify(a));return true}catch(e){return false}},
+  del(id){try{const a=this.all();delete a[id];localStorage.setItem(LOCAL,JSON.stringify(a))}catch(e){}}
+};
+let forms={},currentId=null,state={};
+const newId=()=>'f'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const busyTyping=()=>{const a=document.activeElement;return a&&$('#form').contains(a)&&/^(TEXTAREA|INPUT|SELECT)$/.test(a.tagName);};
+async function initStore(){
+  forms=local.all();renderList();
+  if(!window.claude||!window.claude.use){$('#localNote').hidden=false;return;}
+  try{
+    const [d,u]=await Promise.all([claude.use('db'),claude.use('user')]);
+    if(!d||!u)return;
+    const uid=await u.id();if(!uid)return;
+    col=d.collection('data/users/'+uid);
+    col.onSnapshot(snap=>{
+      const next={};
+      snap.docs.forEach(doc=>{if(doc.exists)next[doc.id]=doc.data();});
+      Object.entries(local.all()).forEach(([id,v])=>{if(!next[id]){next[id]=v;col.doc(id).set(v).catch(()=>{});}});
+      forms=next;renderList();
+      if(currentId&&next[currentId]&&!dirty&&!busyTyping()&&(next[currentId].updatedAt||0)>(state.updatedAt||0)){state=migrate(clone(next[currentId]));load();}
+    },()=>{});
+  }catch(e){}
+}
+let dirty=false,timer,writing=Promise.resolve();
+function persist(){
+  state.updatedAt=Date.now();
+  const id=currentId,data=clone(state);
+  forms[id]=data;local.put(id,data);
+  writing=writing.then(async()=>{
+    if(col){try{await col.doc(id).set(data);}catch(e){setStatus('Saved on this device only');dirty=false;return;}}
+    dirty=false;setStatus('Saved');
+  });
+}
+function save(now){
+  if(!currentId)return;
+  renderHead();dirty=true;setStatus('Saving…');clearTimeout(timer);
+  if(now)persist();else timer=setTimeout(persist,700);
+}
+function setStatus(t){$('#status').textContent=t;}
+
+// ---------- migration ----------
+function fromGoalCards(s){
+  if(!Array.isArray(s.goals))return s;
+  s.goals.slice(0,3).forEach((g,i)=>{const n=i+1;
+    if(!s['goal'+n]&&g.title)s['goal'+n]=g.title;
+    if(!s['now'+n]&&g.now)s['now'+n]=g.now;
+    if(!s['step'+n]&&g.plan)s['step'+n]=g.plan;
+    if(!s['rate'+n]&&g.baseline!=null)s['rate'+n]=String(Math.max(1,Math.min(10,g.baseline+1)));
+    if(!s['freq'+n]&&g.freq){s['freq'+n]=g.freq;if(g.freqOther)s['freqOther'+n]=g.freqOther;}
+    (g.where||[]).forEach(p=>{const k=places.indexOf(p);if(k>-1&&s['where'+n+k]===undefined)s['where'+n+k]=true;});
+  });
+  return s;
+}
+function newGoal(){return {id:newId(),title:'',words:'',now:'',longTerm:'',plan:'',smart:{},base:null,achieved:false,checkins:[]};}
+function migrate(s){
+  s=fromGoalCards(s||{});
+  if(s.v2){if(!Array.isArray(s.gs))s.gs=[];return s;}
+  if(!has(s.hopes)&&has(s.working))s.hopes=s.working;
+  if(!has(s.brings)){
+    const p=[];
+    if(has(s.worries))p.push('Worries: '+s.worries.trim());
+    const notes=help.map((h,i)=>s['help'+i]&&has(s['helpNote'+i])?h[0]+': '+s['helpNote'+i].trim():'').filter(Boolean);
+    if(notes.length)p.push(notes.join('\n'));
+    if(has(s.helpOther))p.push('Other: '+s.helpOther.trim());
+    if(has(s.else))p.push('Also: '+s.else.trim());
+    if(p.length)s.brings=p.join('\n');
+  }
+  if(!has(s.checkPlan)&&(has(s.checkWhen)||has(s.checkHow)))s.checkPlan=[s.checkWhen,s.checkHow].filter(has).join(' · ');
+  if(!Array.isArray(s.gs)){
+    const rv=(Array.isArray(s.reviews)?s.reviews:[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+    s.gs=[];
+    for(let n=1;n<=3;n++){
+      const t=(s['goal'+n]||'').trim();
+      if(!t&&!has(s['now'+n])&&!has(s['step'+n]))continue;
+      const freq=s['freq'+n]==='Other'?s['freqOther'+n]:s['freq'+n];
+      const extra=[places.filter((p,i)=>s['where'+n+i]).join(', '),freq].filter(has).join(' · ');
+      const g=newGoal();
+      Object.assign(g,{title:t,now:s['now'+n]||'',plan:[s['step'+n]||'',extra?'Where / how often: '+extra:''].filter(has).join('\n'),base:has(s['rate'+n])?+s['rate'+n]:null});
+      rv.forEach(r=>{const e=r.g&&r.g[n];if(!e)return;
+        g.checkins.push({id:newId(),date:r.date||'',created:r.created||0,pos:e.rate?+e.rate:null,notes:[e.note,has(r.well)?'Going well: '+r.well:'',has(r.change)?'Change: '+r.change:'',has(r.still)?'Priorities: '+r.still:''].filter(has).join('\n')});});
+      s.gs.push(g);
+    }
+  }
+  s.v2=true;return s;
+}
+
+// ---------- backup ----------
+async function saveFile(name,blob){
+  const dl=window.claude&&window.claude.use?await claude.use('downloads'):null;
+  if(dl){await dl.save({filename:name,data:blob});return;}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+$('#backupBtn').onclick=async()=>{
+  try{const data={app:'working-together',version:2,exported:new Date().toISOString(),clients:forms};
+    await saveFile('Working Together backup '+todayStr()+'.json',new Blob([JSON.stringify(data,null,1)],{type:'application/json'}));
+    $('#homeStatus').textContent=Object.keys(forms).length+' client file(s) backed up';}
+  catch(e){if(e&&e.code==='declined')return;$('#homeStatus').textContent="Couldn't save the backup.";}
+};
+$('#restoreFile').addEventListener('change',async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  try{
+    const j=JSON.parse(await f.text()),inc=j&&j.clients&&typeof j.clients==='object'?j.clients:null;
+    if(!inc)throw new Error('bad');
+    let added=0,updated=0;
+    for(const [id,d] of Object.entries(inc)){
+      if(!d||typeof d!=='object')continue;
+      const cur=forms[id];
+      if(!cur){added++;}else if((d.updatedAt||0)>(cur.updatedAt||0)){updated++;}else continue;
+      forms[id]=d;local.put(id,d);if(col){try{await col.doc(id).set(d);}catch(err){}}
+    }
+    renderList();$('#homeStatus').textContent=`Restored: ${added} new, ${updated} updated. Newer files on this device were kept.`;
+  }catch(err){$('#homeStatus').textContent="That file isn't a Working Together backup.";}
+});
+
+// ---------- list & header ----------
+function dobAge(d){
+  if(!d||!d.dob)return null;const b=new Date(d.dob+'T00:00:00'),t=new Date();if(isNaN(b))return null;
+  if(b.getFullYear()<1950)return null;
+  let m=(t.getFullYear()-b.getFullYear())*12+(t.getMonth()-b.getMonth());if(t.getDate()<b.getDate())m--;return m<0||m>12*40?null:m;
+}
+function progress(d){
+  d=migrate(clone(d));
+  const q=['brings','hopes','family','culture','strengths','langs','week','people','services','bgDiag','bgHealth','bgDev','bgFeed','bgSchool','bgTherapy'].some(k=>has(d[k]))||help.some((h,i)=>d['help'+i]);
+  const w=['service','contact','appointments','roleTherapist','roleCaregivers','roleOthers','checkPlan'].some(k=>has(d[k]));
+  const g=d.gs.filter(x=>has(x.title)).length,cis=d.gs.flatMap(x=>x.checkins||[]);
+  return {q,w,g,r:cis.length,last:cis.map(c=>c.date).filter(Boolean).sort().pop()};
+}
+const tick='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4 10-10"/></svg>';
+function renderList(){
+  const all=Object.entries(forms).sort((a,b)=>(b[1].updatedAt||0)-(a[1].updatedAt||0));
+  const qv=($('#search').value||'').trim().toLowerCase();
+  const items=qv?all.filter(([id,d])=>(d.childName||'').toLowerCase().includes(qv)):all;
+  $('#searchWrap').hidden=all.length<6&&!qv;
+  $('#empty').hidden=all.length>0;$('#noMatch').hidden=!(all.length&&!items.length);
+  $('#list').innerHTML=items.map(([id,d])=>{
+    const n=(d.childName||'').trim()||'Unnamed child',m=dobAge(d),pr=progress(d);
+    const when=pr.last?'Last check-in '+fmtDate(pr.last):(d.updatedAt>1e11?'Updated '+fmt(d.updatedAt):'');
+    const step=(ok,l)=>`<span class="ps${ok?' ok':''}">${ok?tick:''}${l}</span>`;
+    return `<li><button type="button" data-open="${id}"><span class="av" aria-hidden="true">${escH(n.charAt(0).toUpperCase())}</span>
+      <span class="li-main"><span class="li-name">${escH(n)}${m!=null?` <span class="li-age">${ageText(m)}</span>`:''}</span>
+      <span class="li-steps">${step(pr.q,'Getting to know you')}${step(pr.w,'Working together')}${step(pr.g>0,pr.g?pr.g+' goal'+(pr.g>1?'s':''):'Goals')}${pr.r?step(true,pr.r+' check-in'+(pr.r>1?'s':'')):''}</span></span>
+      <span class="li-when">${escH(when)}</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></li>`;
+  }).join('');
+}
+$('#list').addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openForm(b.dataset.open);});
+function renderHead(){
+  if(!currentId)return;
+  const n=(state.childName||'').trim(),m=dobAge(state);
+  $('#ahName').textContent=n||'New client';
+  const resp=has(state.filledBy)?state.filledBy.trim()+(has(state.relation)?' ('+state.relation.trim()+')':''):'';
+  const badDob=has(state.dob)&&m==null;
+  $('#ahMeta').textContent=[m!=null?ageText(m):(badDob?'check DOB':''),resp,has(state.date)?'Initial Ax '+shortDate(state.date):''].filter(Boolean).join(' · ')||'Tap to add child details';
+  const pr=progress(state);
+  $('#tc-q').innerHTML=pr.q?tick:'';$('#tc-w').innerHTML=pr.w?tick:'';$('#tc-g').textContent=pr.g||'';
+}
+function show(view){$('#home').hidden=view!=='home';$('#form').hidden=view!=='form';window.scrollTo(0,0);}
+
+// ---------- tabs ----------
+const TABS=['q','w','g','m'];let curTab='q';
+function setTab(t){
+  curTab=t;
+  TABS.forEach(x=>{$('#tab-'+x).hidden=x!==t;$('.seg [data-tab="'+x+'"]').setAttribute('aria-selected',String(x===t));});
+  if(t==='g')renderGoal();
+  if(t==='m')renderNorms();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.seg [data-tab]').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+$('.seg').addEventListener('keydown',e=>{if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;const i=TABS.indexOf(curTab),n=TABS[(i+(e.key==='ArrowRight'?1:TABS.length-1))%TABS.length];setTab(n);$('.seg [data-tab="'+n+'"]').focus();});
+
+function openForm(id){
+  currentId=id;gIdx=0;ciPage={};normAge=null;normDomain='now';normAll=false;
+  state=migrate(clone(forms[id]));load();setStatus('');show('form');
+  setTab(state.gs.some(g=>has(g.title))?'g':'q');
+}
+function goHome(){clearTimeout(timer);if(dirty)persist();currentId=null;renderList();show('home');}
+
+const fields=()=>document.querySelectorAll('#form [data-k]');
+function load(){
+  fields().forEach(el=>{const k=el.dataset.k;if(el.type==='checkbox')el.checked=!!state[k];else el.value=state[k]||'';});
+  renderHead();
+  if(curTab==='g'&&!$('#tab-g').hidden)renderGoal();
+}
+document.addEventListener('input',e=>{
+  const el=e.target,k=el.dataset&&el.dataset.k;if(!k||!currentId)return;
+  state[k]=el.type==='checkbox'?el.checked:el.value;
+  save();
+});
+$('#newBtn').onclick=()=>{const id=newId();forms[id]={createdAt:Date.now(),updatedAt:Date.now(),date:todayStr(),v2:true,gs:[]};local.put(id,forms[id]);col&&col.doc(id).set(forms[id]).catch(()=>{});openForm(id);setTimeout(openDetails,50);};
+$('#backBtn').onclick=goHome;
+$('#moreBtn').onclick=e=>{e.stopPropagation();const p=$('#morePop'),open=p.hidden;p.hidden=!open;$('#moreBtn').setAttribute('aria-expanded',String(open));if(open)$('#editBtn').focus();};
+document.addEventListener('click',e=>{if(!e.target.closest('.menu')){$('#morePop').hidden=true;$('#moreBtn').setAttribute('aria-expanded','false');}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#morePop').hidden){$('#morePop').hidden=true;$('#moreBtn').focus();}});
+$('#search').addEventListener('input',renderList);
+function ask(msg,ok='Delete'){return new Promise(res=>{const d=$('#askDlg');$('#askMsg').textContent=msg;$('#askOk').textContent=ok;d.returnValue='';const done=()=>{d.removeEventListener('close',done);res(d.returnValue==='yes');};d.addEventListener('close',done);if(d.showModal)d.showModal();else d.setAttribute('open','');setTimeout(()=>$('#askOk').focus(),30);});}
+function openDetails(){$('#morePop').hidden=true;load();const d=$('#detailsDlg');if(d.showModal)d.showModal();else d.setAttribute('open','');setTimeout(()=>$('#d-childName').focus(),30);}
+$('#ahWho').onclick=openDetails;$('#editBtn').onclick=openDetails;
+$('#detailsDlg').addEventListener('close',()=>{load();if(curTab==='m')renderNorms();if(curTab==='g')renderGoal();});
+$('#detailsDlg').addEventListener('click',e=>{if(e.target.id==='detailsDlg')e.target.close();});
+
+// ---------- goals ----------
+let gIdx=0,ciPage={};
+function curGoal(){if(!Array.isArray(state.gs))state.gs=[];if(!state.gs.length)state.gs.push(newGoal());gIdx=Math.max(0,Math.min(gIdx,state.gs.length-1));return state.gs[gIdx];}
+const ciSorted=g=>(g.checkins||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(a.created||0)-(b.created||0));
+const posOpts=v=>'<option value="">–</option>'+Array.from({length:10},(_,i)=>`<option value="${i+1}"${String(v)===String(i+1)?' selected':''}>${i+1}</option>`).join('');
+const firstName=()=>((state.childName||'').trim().split(/\s+/)[0])||'your child';
+function trackHtml(g){
+  const cs=ciSorted(g).filter(c=>c.pos),X=v=>((v-1)/9*96).toFixed(1)+'%';let d='';
+  if(g.base)d+=`<span class="gdot b${cs.length?'':' n'}" style="left:${X(g.base)}" title="At the start: ${g.base}/10"></span>`;
+  cs.forEach((c,i)=>d+=`<span class="gdot${i===cs.length-1?' n':''}" style="left:${X(c.pos)}" title="${escH(shortDate(c.date)||'Check-in')}: ${c.pos}/10"></span>`);
+  return d;
+}
+function renderGoalChips(){
+  const g=curGoal();
+  $('#gchips').innerHTML=state.gs.map((x,i)=>`<button type="button" class="gchip" data-gi="${i}" aria-pressed="${i===gIdx}">${x.achieved?'<span class="ok">✓</span>':''}${i+1} · ${escH(x.title.trim()||'New goal')}</button>`).join('')+'<button type="button" class="gchip add" id="gAdd">+ Add goal</button>';
+  $('#gDone').textContent=g.achieved?'Mark as in progress':'Mark achieved';
+}
+function renderGoal(){
+  const g=curGoal(),name=firstName();g.smart=g.smart||{};g.checkins=g.checkins||[];
+  renderGoalChips();
+  const cs=ciSorted(g),off=Math.min(ciPage[g.id]||0,Math.max(0,cs.length-2)),end=cs.length-off,shown=cs.slice(Math.max(0,end-2),end);
+  const num=c=>cs.indexOf(c)+1;
+  const ciBox=(c,n)=>c?`<div class="box green ci"><div class="cih">Check in ${n}<input type="date" data-gf="ci.date" data-ci="${c.id}" value="${escH(c.date)}" aria-label="Check-in ${n} date"><label>Line <select data-gf="ci.pos" data-ci="${c.id}" aria-label="Check-in ${n}: where on the line">${posOpts(c.pos)}</select></label><button type="button" class="x" data-cidel="${c.id}" aria-label="Delete check-in ${n}">×</button></div><textarea data-gf="ci.notes" data-ci="${c.id}" aria-label="Check-in ${n} notes" placeholder="Our notes: what's going well, what we'll keep doing, what we'll change">${escH(c.notes)}</textarea></div>`
+    :`<div class="box green ci empty">${n===1?'No check-ins yet. Tap <b>+ New check-in</b> when you review this goal.':'Next check-in'}</div>`;
+  const showSmart=g.smartOpen||['by','will','measure'].some(k=>has(g.smart[k]));
+  $('#goalSheet').innerHTML=`
+  <div class="boxes" style="--cols:2.2fr 1fr">
+    <div class="box pink goalbox"><div class="gl"><b>GOAL</b>This is our priority</div>${pqBtn('goal')}<textarea data-gf="title" aria-label="Goal" placeholder="The goal, in the family's words">${escH(g.title)}</textarea></div>
+    <div class="box pink"><label for="g-words">In ${escH(name)}'s words</label>${pqBtn('words')}<textarea id="g-words" data-gf="words" placeholder="What they want to get better at, and why it matters to them">${escH(g.words)}</textarea></div>
+  </div>
+  <div class="boxes" style="--cols:1fr 1fr">
+    <div class="box blue"><label for="g-now">Where are we now?</label>${pqBtn('now')}<textarea id="g-now" data-gf="now" placeholder="What happens now (baseline)">${escH(g.now)}</textarea></div>
+    <div class="box blue"><label for="g-lt">What are we working towards (long-term goal)?</label>${pqBtn('longTerm')}<textarea id="g-lt" data-gf="longTerm">${escH(g.longTerm)}</textarea></div>
+  </div>
+  <div class="gline">${pqBtn('line')}<span>At the start<select data-gf="base" aria-label="Starting point on the line, 1 to 10">${posOpts(g.base)}</select></span><div class="gtrack" id="gtrack">${trackHtml(g)}</div><span>We have achieved this goal</span></div>
+  <div class="box blue"><label for="g-plan">Our plan: short-term goals and home activities</label>${pqBtn('plan')}<textarea id="g-plan" data-gf="plan" placeholder="Short-term steps, and what home practice looks like">${escH(g.plan)}</textarea>
+    ${showSmart?`<div class="smart">Goal statement: By <input type="date" data-gf="smart.by" value="${escH(g.smart.by)}" aria-label="By date">, ${escH(name)} will <input class="w" data-gf="smart.will" value="${escH(g.smart.will)}" aria-label="will be able to" placeholder="be able to…"> as measured by <input class="w" data-gf="smart.measure" value="${escH(g.smart.measure)}" aria-label="as measured by" placeholder="how we'll measure it"></div>`:'<button type="button" class="smart-tog" id="smartTog">+ Goal statement for reports (By __, will __, as measured by __)</button>'}
+  </div>
+  <div class="cirow">
+    <div class="cil"><b>CHECK IN ${pqBtn('checkin')}</b><span class="q">Are we making progress? What's going well? What will we keep doing? What will we change? What can I do to help? How have home activities been? Still our priority? Roles still the same?</span>
+      ${cs.length>2?`<div class="cipg"><button type="button" data-cipg="1"${end-2<=0?' disabled':''}>‹ Earlier</button><button type="button" data-cipg="-1"${off<=0?' disabled':''}>Later ›</button></div>`:''}
+      <button type="button" id="ciAdd">+ New check-in</button></div>
+    ${ciBox(shown[0],shown[0]?num(shown[0]):1)}${ciBox(shown[1],shown[1]?num(shown[1]):(shown[0]?num(shown[0])+1:2))}
+  </div>`;
+}
+$('#goalSheet').addEventListener('input',e=>{
+  const el=e.target,f=el.dataset.gf;if(!f||!currentId)return;const g=curGoal();
+  if(f.startsWith('ci.')){const c=g.checkins.find(x=>x.id===el.dataset.ci);if(!c)return;const k=f.slice(3);c[k]=k==='pos'?(el.value?+el.value:null):el.value;if(k==='pos')$('#gtrack').innerHTML=trackHtml(g);}
+  else if(f.startsWith('smart.')){g.smart[f.slice(6)]=el.value;}
+  else if(f==='base'){g.base=el.value?+el.value:null;$('#gtrack').innerHTML=trackHtml(g);}
+  else{g[f]=el.value;if(f==='title')renderGoalChips();}
+  save();
+});
+$('#goalSheet').addEventListener('change',e=>{if(e.target.dataset.gf==='ci.date'){save(true);renderGoal();}});
+$('#goalSheet').addEventListener('click',e=>{
+  const g=curGoal(),t=e.target;
+  if(t.id==='smartTog'){g.smartOpen=true;renderGoal();const i=$('#goalSheet .smart input.w');i&&i.focus();return;}
+  if(t.id==='ciAdd'){g.checkins.push({id:newId(),date:todayStr(),created:Date.now(),pos:null,notes:''});ciPage[g.id]=0;save(true);renderGoal();const n=[...document.querySelectorAll('#goalSheet .ci textarea')].pop();n&&n.focus();return;}
+  const d=t.closest('[data-cidel]');if(d){ask('Delete this check-in?').then(ok=>{if(!ok)return;g.checkins=g.checkins.filter(c=>c.id!==d.dataset.cidel);save(true);renderGoal();});return;}
+  const p=t.closest('[data-cipg]');if(p){ciPage[g.id]=Math.max(0,(ciPage[g.id]||0)+(+p.dataset.cipg));renderGoal();}
+});
+$('#gchips').addEventListener('click',e=>{
+  const c=e.target.closest('[data-gi]');if(c){gIdx=+c.dataset.gi;renderGoal();return;}
+  if(e.target.closest('#gAdd')){state.gs.push(newGoal());gIdx=state.gs.length-1;save(true);renderGoal();$('#goalSheet textarea[data-gf=title]').focus();}
+});
+$('#gDone').onclick=()=>{const g=curGoal();g.achieved=!g.achieved;save(true);renderGoal();};
+$('#gDel').onclick=async()=>{const g=curGoal();if(!await ask(`Remove goal ${gIdx+1}${has(g.title)?' ("'+g.title.trim()+'")':''} and its check-ins? This can't be undone.`,'Remove goal'))return;state.gs.splice(gIdx,1);gIdx=Math.max(0,gIdx-1);save(true);renderGoal();};
+
+// ---------- conversation prompts (paraphrased from NSLHD CYF Speech Pathology conversation prompts; DECIDE framework for child's words) ----------
+const PR={
+ brings:{t:'What brings you in today?',c:"We'll talk about what you've noticed in your child's communication and any past therapy, so we can plan next steps that suit your family.",q:["When you think about your child's development, what worries you?","What matters most to you right now?","How much time can you give to speech pathology at the moment? What else is competing for that time?","How do you feel about therapy? What do you picture it looking like?","What are you already doing to support your child?","What have you tried before, and how did it go?"]},
+ hopes:{t:'What would you love to see change?',c:"Hopes help us agree on goals that matter to your family.",q:["What are your hopes for your child?","What would tell you therapy is working?","What would a good day look like for your child?"]},
+ family:{t:'Who is in your family?',c:"Knowing who's in your family helps us understand your child's support network and communication world, so we can tailor therapy.",q:["Tell me about who is in your family, living with you or somewhere else.","Tell me about the relationships in your family."]},
+ culture:{t:'Family and culture',c:"Understanding your family and culture helps us respect your values, traditions, experiences and ways of communicating.",h1:'Your family',q:["Is your family going through any challenges, stress or changes at the moment?","Tell me about the relationships in your family.","Is there a family history of communication, feeding or mental health difficulties?"],h2:'Your culture',q2:["What is your cultural and language background?","How is disability viewed in your culture?","How does your background shape how you feel about using our service?","When and in what circumstances did your family come to Australia?","Are there any religious or cultural practices that would be helpful for us to know?"]},
+ langs:{t:'Languages at home',c:"Knowing which languages your child hears and uses helps us decide which language to assess and work in.",q:["What languages do you speak at home? Who speaks which language?","What is your child's strongest language? What is yours?","When did your child start hearing each language (e.g. English at kindy)?"]},
+ child:{t:'What should we know about your child?',c:"When we know what your child enjoys, we can make sessions more engaging and better suited to them.",q:["What does your child like? What do they dislike?","How would you describe your child's personality?","What are your child's strengths? How do they learn best?","Does your child have any medical diagnoses, or things you've seen a doctor about?"]},
+ week:{t:'Your week and your child\'s week',c:"This helps us plan around your family, not the other way round, and make home practice fit your routine.",q:["What is your daily routine?","How do you spend time together? What does your child enjoy doing with you (e.g. books, meals)?","What are your work hours across the week?","Does your child go to childcare or school? How many days?","Are you involved in any community or social groups?"]},
+ people:{t:'Who do you see during the week?',c:"Knowing who else cares for your child (grandparents, educators, other professionals) helps us share information with the right people.",q:["Who else looks after your child?","Who supports you (extended family, friends, community)?","Are you seeing other health professionals now, or have you in the past? What are they working on, or what have they told you?","Is there anyone else we should share session information with?"]},
+ services:{t:'Other services or supports',c:"Some families are also looking for other supports, like strategies at daycare, playgroups, or a paediatrician or OT.",q:["Are you looking for any groups or services for your child that we could help with?","Are you looking for anything to support you as a parent?"]},
+ diag:{t:'Diagnoses',c:"A quick record of formal diagnoses and who made them.",q:["Does your child have any medical or developmental diagnoses?","Who diagnosed them, and when?","Is anything being looked into at the moment?"]},
+ past:{t:'Previous therapy',c:"Past experiences with therapy shape what families expect from us.",q:["What have you tried in the past, and was it helpful?","Are you seeing, or have you seen, other professionals? What goals were they working on?","What information have they given you about your child's development?"]},
+ service:{t:'What happens in our service',c:"Talk through our service model, what happens in sessions, appointments, and how we'll keep in touch between sessions.",q:["We use a parent-led model. What do you know about that?","Would you prefer spoken or written updates on how we're going?"]},
+ roles:{t:'Our roles',c:"We work in partnership. Talk through the roles of parents, the speech pathologist and others.",q:["What do you see as my role in therapy?","What do you see as your role? How will you be involved?","What other ways could you support your child at home?","How do you feel about your capacity for the role we've talked about?","Does anyone else in your child's life have a role (grandparents, aunties and uncles, family friends, educators)?"]},
+ checkPlan:{t:'Our plan for checking in',c:"Today is about planning how we'll work together, and we'll check back on it later. Choose a timeframe together.",q:["When should we check in?","How would you like to check in? E.g. talking in session, email."]},
+ goal:{t:'Goal: this is our priority',c:"Goals here are shared, not set by the clinician alone. Pick the most important goal to start with and make a plan to get there together.",q:["What is your main concern?","Tell me in your own words what you'd like to work on.","What are your hopes for your child?","Are you happy with this goal?"]},
+ words:{t:"In the child's words",c:"Explain goals at their level: \"Usually grown-ups pick your goals. Today I want you to choose something you want to get better at.\" Use pictures of favourite activities or communication supports.",q:["What do you want to get better at?","Why does that matter to you?","Who do you want to talk or play with more?","What would be different if you got better at it?"]},
+ now:{t:'Where are we now?',c:"Knowing what your child can do now helps us find the best next step. Think about the strengths your family brings too.",q:["Where do you feel your child is now? (Share what's typical: see the Milestones tab.)","What have you noticed your child doing now?","What are your family's strengths? What would you like to learn as part of therapy?"],m:true},
+ longTerm:{t:'What are we working towards?',c:"Knowing what we're aiming for helps us see if we're moving in the right direction.",q:["What are your hopes and dreams for your child?","What is your overall goal for your child?"]},
+ line:{t:'The progress line',c:"This line is a simple way to see how we're going towards the overall goal, over time.",q:["Looking at this line and the goal we're working towards, where do you feel your child is now?","How do you feel about that?"]},
+ plan:{t:'Our plan',c:"Breaking it into smaller goals makes the next step clearer and progress easier to notice. Home practice needs to fit your routine.",h1:'Short-term goals',q:["What smaller steps would help us reach your overall goal?","What specific tasks or strategies could we use?"],h2:'Home activities',q2:["What does a day look like? When do you have time with your child?","What everyday activities are you already doing that we could build on?","How many times a week do you think you could practise?","Is anything getting in the way of practising between sessions?","Do you feel able to work on these goals between sessions?"]},
+ checkin:{t:'Check in',c:"At the times we planned, look at the line together and talk about how things are going. A good time for the family to say how you can support them.",q:["Is your child progressing towards the goal we set last time?","What is going well? What will we keep doing?","What will we change? Is there anything you feel you could do differently?","What can I do to help?","How have home activities been?","Is this goal still your priority?","Are our roles still the same?"]}
+};
+const pqBtn=(k,label)=>`<button type="button" class="pq" data-p="${k}" aria-label="Conversation prompts: ${escH(label||PR[k].t)}" aria-expanded="false">?</button>`;
+function openPrompts(btn){
+  const k=btn.dataset.p,p=PR[k],pop=$('#pop');if(!p)return;
+  if(!pop.hidden&&pop.dataset.p===k){closePrompts();return;}
+  closePrompts();
+  const list=a=>'<ul>'+a.map(x=>'<li>'+escH(x)+'</li>').join('')+'</ul>';
+  pop.innerHTML=`<div class="pop-h"><b>${escH(p.t)}</b><button type="button" class="pop-x" aria-label="Close prompts">×</button></div><p class="pop-c">${escH(p.c)}</p>${p.h1?'<p class="pop-sh">'+escH(p.h1)+'</p>':''}${list(p.q)}${p.h2?'<p class="pop-sh">'+escH(p.h2)+'</p>'+list(p.q2):''}${p.m?'<button type="button" class="link small" data-goto-m>Open Milestones</button>':''}`;
+  pop.dataset.p=k;pop.hidden=false;popY=window.scrollY;btn.setAttribute('aria-expanded','true');btn.classList.add('on');
+  const r=btn.getBoundingClientRect(),w=Math.min(380,innerWidth-16);pop.style.width=w+'px';
+  let left=Math.min(Math.max(8,r.right-w),innerWidth-w-8),top=r.bottom+6;
+  pop.style.left=left+'px';pop.style.top=top+'px';
+  const h=pop.offsetHeight;if(top+h>innerHeight-8){top=Math.max(8,r.top-h-6);pop.style.top=top+'px';}
+  pop.querySelector('.pop-x').focus();
+}
+function closePrompts(){const pop=$('#pop');if(pop.hidden)return;const b=document.querySelector('.pq.on');if(b){b.classList.remove('on');b.setAttribute('aria-expanded','false');}pop.hidden=true;}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.pq');if(b){e.preventDefault();e.stopPropagation();openPrompts(b);return;}
+  if(e.target.closest('.pop-x')){const k=$('#pop').dataset.p;closePrompts();const ob=document.querySelector('.pq[data-p="'+k+'"]');ob&&ob.focus();return;}
+  if(e.target.closest('[data-goto-m]')){closePrompts();setTab('m');return;}
+  if(!e.target.closest('#pop'))closePrompts();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePrompts();});
+window.addEventListener('resize',closePrompts);
+let popY=0;window.addEventListener('scroll',()=>{if(!$('#pop').hidden&&Math.abs(window.scrollY-popY)>80)closePrompts();});
+document.querySelectorAll('#tab-q [data-pk],#tab-w [data-pk]').forEach(l=>l.insertAdjacentHTML('afterend',pqBtn(l.dataset.pk,l.textContent)));
+
+// ---------- milestones ----------
+// Paraphrased from: Shipley & McAfee, Assessment in Speech-Language Pathology (tables 6-7, 7-1, 7-8, 7-11, 8-1, 8-2, 10-2, 10-3, 12-1; fig 6-1);
+// Roth & Worthington (2019) Treatment Resource Manual, Feeding Developmental Milestones; Boudreau & Costanza-Smith (2011) LSHSS 42.
+const M=(y,m=0)=>y*12+m;
+const domains=[
+ {id:'lang',name:'Talking and understanding',src:'Shipley & McAfee, Tables 7-1, 7-8 and 7-11',
+  note:'Children vary a lot. Look at the overall picture, not one missing skill.',
+  bands:[
+   {from:0,to:M(0,7),label:'0–6 months',items:['Coos, gurgles and makes happy sounds','Uses different cries for different needs (hungry, tired, hurting)','Smiles when spoken to and turns towards voices','Starts babbling with sounds like b, p and m']},
+   {from:M(0,7),to:M(1),label:'7–12 months',items:['Understands "no" and responds to their name','Follows simple requests and recognises everyday words (cup, shoe)','Babbles in long strings of sounds with speech-like tune','Points, and may say first words like "mama" or "dada" around 12 months']},
+   {from:M(1),to:M(1,7),label:'12–18 months',items:['Says about 3–20 words, mostly names of things','Follows simple directions without gestures ("sit down")','Points to 1–3 body parts when asked','Uses gestures with sounds to ask for things, like "more"']},
+   {from:M(1,7),to:M(2),label:'18–24 months',items:['Says 50–100+ words and understands 300+','Starts joining two words ("more juice", "daddy go")','Starts using I, me and mine','Asks "what\'s that?" and enjoys stories'],
+    flag:'Fewer than 50 words, or not joining words, by age 2 is worth checking. Children who haven\'t caught up by 3 are more likely to have ongoing difficulties.'},
+   {from:M(2),to:M(3),label:'2–3 years',items:['Uses 2–4 word phrases; vocabulary grows fast (50–250+ words, understands 500–900+)','Follows two-part instructions ("get your shoes and come here")','Asks simple questions and understands most things said to them','Lots of grammar mistakes are still normal','Average sentence length grows from about 2 to 3 words']},
+   {from:M(3),to:M(4),label:'3–4 years',items:['Uses 4–5 word sentences','Follows two- and three-part instructions','Understands opposites (big–little, stop–go) and what objects are for','Tells two events in order and talks about past and future','Uses plurals and simple past tense ("jumped"), some errors still normal','Average sentence length grows from about 3 to 4½ words']},
+   {from:M(4),to:M(5),label:'4–5 years',items:['Uses 4–8 word sentences with mostly adult-like grammar','Mistakes with tricky words ("goed", "mouses") are still normal','Answers why, who and how many questions','Listens to short stories and answers questions about them','Tells you about things that happened at kindy or a friend\'s house','Asks what words mean']},
+   {from:M(5),to:M(6),label:'5–6 years',items:['Follows instructions given to the whole group','Asks how questions','Uses past and future tense correctly','Joins ideas with words like "and", "because"','Retells a story accurately, with details','Chats easily with adults and other children']},
+   {from:M(6),to:M(8),label:'6–7 years',items:['Gives more detailed descriptions','Understands left and right, and most time words','Uses sentences of about 6 words','Uses most grammar endings correctly','Understands sentences like "the ball was kicked by the boy"']},
+   {from:M(8),to:M(19),label:'8 years and up',items:['Not covered by these milestone tables. From here we compare with school demands and standardised testing.']}
+  ],
+  extra:'Things that make ongoing language difficulties more likely: family history, frequent ear infections or hearing loss, being born early or small, and using few gestures.'},
+ {id:'speech',name:'Speech sounds',src:'Shipley & McAfee, Figure 6-1 (Sander 1972), Table 6-7 and Table 7-11',
+  note:'It\'s the pattern that matters. Saying "t" for "s" is normal at 2 but not at 4.',
+  bands:[
+   {from:0,to:M(2),label:'Under 2',items:['Babbling and first words come first (see Talking and understanding)','Toddlers are often hard to understand, and that\'s expected']},
+   {from:M(2),to:M(3),label:'2–3 years',items:['Strangers understand about half to three-quarters of what they say','Most children use p, b, m, n, h and w','Still learning k, g, t, d, f, y and ng (normal)','Often drops sounds at the ends of words and in the middle of words'],
+    gone:'Should be gone by 3: repeating syllables ("wawa" for water), "tun" for "sun" (stopping f and s), and matching sounds ("gog" for "dog")'},
+   {from:M(3),to:M(4),label:'3–4 years',items:['Strangers understand about 80% of what they say','Most children have k, g, d, f and y','Still learning r, l, s, z, sh, ch, j, v and th (normal)'],
+    gone:'Should be gone by 4: leaving off end sounds ("ca" for "cat"), front sounds for back sounds ("tar" for "car"), dropping weak syllables ("nana" for "banana"), and simplifying blends ("poon" for "spoon")'},
+   {from:M(4),to:M(5),label:'4–5 years',items:['Usually understood by strangers, even with some errors','t and ng are settling','Still learning r, l, s, z, sh, ch, j, v and th (normal)'],
+    gone:'Should be gone by 5: "t" or "d" for "th" ("tum" for "thumb")'},
+   {from:M(5),to:M(6),label:'5–6 years',items:['Most children have r and l by 6','s, z, sh, ch, j, v and th can still be developing'],
+    gone:'Should be gone by 6: "w" for "r" or "l" ("wabbit")'},
+   {from:M(6),to:M(9),label:'6–8 years',items:['s and z are settled for almost all children by 8','sh, ch, j and the "th" in "thin" settle by about 7','v, the "th" in "the", and the sound in "measure" settle by about 8'],
+    gone:'By 8, children typically say all sounds and patterns like adults (no extra vowels, like "buh-lue" for "blue")'},
+   {from:M(9),to:M(19),label:'9 years and up',items:['All speech sounds are expected to be in place','Any ongoing sound errors are worth a look']}
+  ],
+  extra:'If your child speaks more than one language, some differences in English sounds can come from the home language and are not a difficulty.'},
+ {id:'social',name:'Social communication',src:'Shipley & McAfee, Tables 10-2 (ASHA benchmarks) and 10-3',
+  note:'Culture shapes social communication (eye contact, turn-taking, politeness). Keep your family\'s culture in mind.',
+  bands:[
+   {from:0,to:M(1),label:'0–12 months',items:['Looks at faces and smiles back','Follows your gaze to see what you\'re looking at','Takes turns making sounds with you','Uses gestures to ask for things and show you things','Plays games like peekaboo']},
+   {from:M(1),to:M(1,6),label:'12–18 months',items:['Brings things to show you','Points and makes sounds to ask','Says "bye" and shakes head for "no"','Looks at you when you talk','Shows sympathy and shares, without words']},
+   {from:M(1,6),to:M(2),label:'18–24 months',items:['Uses words to ask, get attention, say what\'s theirs, and say what\'s wrong','Uses I, me, you, my and mine','Takes a few turns in a back-and-forth chat']},
+   {from:M(2),to:M(3),label:'2–3 years',items:['Has short conversations, and starts and changes topics','Talks about feelings','Uses language in pretend play','Asks for clarification ("what?") and tries to explain','Uses some please and thank you','Starts changing how they talk for different people']},
+   {from:M(3),to:M(4),label:'3–4 years',items:['Has longer conversations and knows when it\'s their turn','Role-plays, jokes and teases','Uses simpler talk with younger children','Asks permission','Fixes it when they\'re not understood','Identifies basic feelings and what caused them']},
+   {from:M(4),to:M(5),label:'4–5 years',items:['Asks indirectly ("it\'s cold in here")','Uses this, that, here and there correctly','Talks about feelings much more','Tells stories as a chain of events, often without a clear main point','By 5, understands people can believe something that isn\'t true']},
+   {from:M(5),to:M(19),label:'School age',items:['Reads body language, faces and tone of voice','Sees things from someone else\'s point of view','Keeps a topic going and fixes misunderstandings','Tells stories with a problem and a solution','Uses language to persuade and give opinions','By 6: knows people can look one way and feel another','By 7: understands "Mum thinks Dad thinks…"; talks about feeling jealous, guilty or embarrassed']}
+  ]},
+ {id:'narr',name:'Storytelling',src:'Shipley & McAfee, Tables 7-11, 8-1 and 10-2 and narrative assessment (Ch. 8); Roth & Worthington (2019), story grammar elements (Stein & Glenn, 1979)',
+  note:'Storytelling pulls together vocabulary, sentences, sequencing and understanding people. Retelling a familiar story, or telling about their own day, both count.',
+  bands:[
+   {from:M(2),to:M(3),label:'2–3 years',items:['Talks about things that happened to them','Starts adding detail so you can follow along','Uses language in pretend play']},
+   {from:M(3),to:M(4),label:'3–4 years',items:['Tells two events in the right order','Simple stories built around one main idea','Talks about past and future']},
+   {from:M(4),to:M(5),label:'4–5 years',items:['Tells you what happened at kindy or a friend\'s house','Stories are a chain of events, often without a clear main character or point (normal)','Listens to short stories and answers questions about them']},
+   {from:M(5),to:M(6),label:'5–6 years',items:['Retells a story accurately','Adds details to sentences','Exchanges information and asks questions about it']},
+   {from:M(6),to:M(8),label:'6–7 years',items:['Stories have a problem and a solution','Links events with "because", "so", "then"','Understands the basic parts of a story','Retells with a beginning, middle and end']},
+   {from:M(8),to:M(10),label:'8–9 years',items:['Predicts what will happen next','Works out characters\' feelings and reasons','Writes stories, letters and simple reports','Puts a story in own words']},
+   {from:M(10),to:M(19),label:'10 years and up',items:['Describes how characters and plot develop','Organises writing around a central idea','Moves on to explaining and persuasive writing']}
+  ],
+  extra:'At home, try asking for familiar routines ("How do we make toast?") and things that happened to someone else ("What did Daddy do at the shops?"). Stories from other cultures and languages count too.'},
+ {id:'fluency',name:'Stuttering',src:'Shipley & McAfee, Chapter 12 and Table 12-1',
+  note:'Many children go through a bumpy patch between 2 and 5. Stuttering usually starts before 6 and can change a lot from day to day.',
+  static:[
+   {h:'Usually typical bumps',items:['"Um" and "uh"','Changing what they\'re saying partway ("I want, I need…")','Repeating whole longer words or phrases ("I want–I want a drink")','Relaxed, without struggle']},
+   {h:'More like stuttering',items:['Repeating parts of words ("b-b-ball")','Repeating short words ("I-I-I want")','Stretching sounds ("sssssun")','Getting stuck with no sound coming out','Tension, or extra movements like blinking or head nods','Avoiding words or talking']},
+   {h:'More likely to need help if',items:['It\'s been going on for 6 months or more','It started before their 3rd birthday','Your child is a boy','There are extra body movements or tension','There are other speech or language difficulties','Your child or family are worried about it']}
+  ]},
+ {id:'lit',name:'Reading and writing',src:'Shipley & McAfee, Tables 8-1 and 8-2 (school years approximate for Queensland)',
+  note:'Early sound skills (rhyme, syllables, first sounds) lay the groundwork for reading and spelling.',
+  bands:[
+   {from:M(2),to:M(4),label:'3 years',items:['Knows nursery rhymes','Notices words that rhyme and words that start with the same sound','Knows print goes left to right, and recognises own name and logos','Scribbles that start to look like writing']},
+   {from:M(4),to:M(5),label:'4 years',items:['Says words that rhyme','Breaks a sentence into words','Claps syllables in words (cow-boy)','Writing starts to look like letters']},
+   {from:M(5),to:M(6),label:'5 years (Prep)',items:['Knows when words don\'t rhyme','Names letters','Hears the first sound in a word and blends it with the rest (b-at)','Reads a few familiar words by sight','Writes own name and a few words']},
+   {from:M(6),to:M(7),label:'6 years (Year 1)',items:['Sounds out simple words (c-a-t)','Blends 2–3 sounds into a word','Knows about 100 words by sight','Spells by sound, often missing vowels (normal)','Writes short sentences with a capital letter and full stop']},
+   {from:M(7),to:M(8),label:'7 years (Year 2)',items:['Counts, blends and separates all the sounds in a word','Adds or removes sounds to make new words','Rereads and self-corrects; retells a story','Spelling becomes more conventional','Writing has a beginning, middle and end']},
+   {from:M(8),to:M(9),label:'8 years (Year 3)',items:['Moves and deletes sounds, including in blends','Decodes unfamiliar words','Reads grade-level books fluently and reads to learn','Mostly conventional spelling','Writes stories, letters and simple reports']},
+   {from:M(9),to:M(10),label:'9 years (Year 4)',items:['Decoding is automatic','Reads for pleasure and to learn','Makes inferences and puts ideas in own words','Spots misspellings and uses spelling rules for new words','Edits own writing']},
+   {from:M(10),to:M(11),label:'10 years (Year 5)',items:['Reads longer, more complex texts','Describes characters and plot','Writes for different purposes','Revises own writing for content']},
+   {from:M(11),to:M(19),label:'11 years and up',items:['Reads to question and analyse','Writes persuasive texts']}
+  ]},
+ {id:'feed',name:'Eating and drinking',src:'Roth & Worthington (2019), Feeding Developmental Milestones (birth to 24 months)',
+  note:'These milestones cover the first two years.',
+  bands:[
+   {from:0,to:M(0,3),label:'0–2 months',items:['Sucks and swallows with a reflex pattern','Losing some milk is normal']},
+   {from:M(0,3),to:M(0,5),label:'3–4 months',items:['Sucks 30+ times in a row','Suck and swallow are well coordinated','Starts putting a hand on the bottle','By 4 months, sucking becomes deliberate and tongue thrust fades']},
+   {from:M(0,5),to:M(0,7),label:'5–6 months',items:['Munches with an up-and-down bite','May go back to sucking','Holds bottle with both hands']},
+   {from:M(0,7),to:M(0,9),label:'7–8 months',items:['Tongue moves up and down with munching, and starts moving food sideways','From a cup: a few good swallows, then some spills (normal)']},
+   {from:M(0,9),to:M(1),label:'9–12 months',items:['Moves food to the sides to chew; rotary chewing begins','Drinks from a cup with some spills','Starts finger feeding','Lips clear food from a spoon (around 10 months)','Closes lips when swallowing (around 12 months)']},
+   {from:M(1),to:M(1,6),label:'12–18 months',items:['Moving to a cup','Scoops with a spoon, may tip it over','Shows clear food preferences']},
+   {from:M(1,6),to:M(2),label:'18–24 months',items:['Mostly feeds self','Chews a wide variety of textures']},
+   {from:M(2),to:M(19),label:'2 years and up',items:['Beyond the range of these milestones. Mealtime concerns are always worth raising with us.']}
+  ]},
+ {id:'wm',name:'Memory and following along',src:'Boudreau & Costanza-Smith (2011), Language, Speech, and Hearing Services in Schools, 42',
+  note:'Working memory is holding information in mind while using it, like remembering an instruction while doing it. There are no simple age milestones; this helps explain what you might notice.',
+  static:[
+   {h:'What it can look like',items:['Trouble following longer or unfamiliar instructions','Losing their place in tasks with several steps','Difficulty keeping pace with the class','Finding writing sentences or writing to dictation hard','Often mistaken for not paying attention']},
+   {h:'Why it matters',items:['Linked with learning new words','Linked with reading, spelling and understanding stories','Common in children with language difficulties']},
+   {h:'What helps',items:['Shorter instructions, one step at a time','Pictures, gestures and written steps','Familiar routines and sentence starters','Checking understanding before starting']}
+  ]}
+];
+// ---------- milestone visuals ----------
+const svgBox=(w,h,label,inner)=>`<svg class="chart" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="${escH(label)}">${inner}</svg>`;
+const sT=(x,y,t,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||12}" fill="${o.c||'var(--ink)'}" text-anchor="${o.a||'start'}"${o.w?` font-weight="${o.w}"`:''} dominant-baseline="middle">${escH(t)}</text>`;
+function childMark(x,top,bottom,label,W){
+  const tw=label.length*6.6+14,lx=Math.max(tw/2,Math.min(W-tw/2,x));
+  return `<line x1="${x}" y1="${top+18}" x2="${x}" y2="${bottom}" stroke="var(--sun)" stroke-width="2.5"/>
+   <rect x="${lx-tw/2}" y="${top}" width="${tw}" height="18" rx="9" fill="var(--sun)"/>${sT(lx,top+9.5,label,{a:'middle',s:11.5,w:600,c:'#1F2E3A'})}`;
+}
+const visW=()=>Math.max(300,Math.min(720,($('#normBody').clientWidth||600)));
+function legend(items){return `<div class="vleg">${items.map(([cls,l])=>`<span><i class="${cls}"></i>${escH(l)}</span>`).join('')}</div>`;}
+
+// Overview: every domain's bands on one age line
+function visOverview(m,name){
+  const short={lang:'Talking',speech:'Speech',social:'Social',narr:'Stories',lit:'Reading',feed:'Eating'};
+  const W=visW(),lab=W<420?70:118,top=8,rowH=28;
+  const use=domains.filter(d=>d.bands),maxM=M(10);
+  const X=mm=>lab+Math.sqrt(Math.min(mm,maxM)/maxM)*(W-lab-12);
+  const H=top+30+use.length*rowH+26;let g='';
+  use.forEach((d,r)=>{const y=top+30+r*rowH;
+    g+=`<text x="${lab-8}" y="${y+rowH/2-2}" text-anchor="end" dominant-baseline="middle" font-size="12" fill="var(--muted)" class="hit" data-nd="${d.id}">${escH(short[d.id]||d.name)}</text>`;
+    d.bands.forEach(b=>{if(b.from>=maxM)return;const x1=X(b.from)+1,x2=X(Math.min(b.to,maxM))-1;if(x2-x1<1)return;
+      const cur=m!=null&&m>=b.from&&m<b.to;
+      g+=`<rect class="hit" data-nd="${d.id}" x="${x1}" y="${y+3}" width="${x2-x1}" height="${rowH-12}" rx="4" fill="${cur?'var(--accent)':'var(--accent-soft)'}"><title>${escH(d.name+': '+b.label)}</title></rect>`;});
+  });
+  const ticks=[[6,'6m'],[12,'1'],[24,'2'],[36,'3'],[48,'4'],[60,'5'],[72,'6'],[96,'8'],[120,'10']];
+  const ay=top+30+use.length*rowH+4;
+  g+=`<line x1="${lab}" y1="${ay}" x2="${W-12}" y2="${ay}" stroke="var(--line)"/>`;
+  ticks.forEach(([t,l])=>{g+=`<line x1="${X(t)}" y1="${ay}" x2="${X(t)}" y2="${ay+4}" stroke="var(--line)"/>`+sT(X(t),ay+13,l,{a:'middle',s:11,c:'var(--muted)'});});
+  g+=sT(lab,ay+13,'0',{a:'middle',s:11,c:'var(--muted)'});
+  if(m!=null&&m<=maxM)g+=childMark(X(m),top,ay,name+' '+ageText(m),W);
+  return `<div class="vis"><p class="vis-h">Where ${escH(name)} is across every area</p>${svgBox(W,H,'Age bands for each area, with the child\'s age marked',g)}<p class="vis-n">Age in years. Tap a row to open that area.</p></div>`;
+}
+
+// Speech sounds: age ranges (Sander 1972, from Shipley & McAfee Fig 6-1)
+const soundRows=[
+ {l:'p m n h w',ex:'pig, mum',s:1.6,e:3},{l:'b',ex:'ball',s:1.6,e:4},{l:'k g d',ex:'cat, go, dog',s:2,e:4},
+ {l:'f y',ex:'fish, yes',s:2.5,e:4},{l:'t',ex:'top',s:2,e:6},{l:'ng',ex:'sing',s:2,e:6},{l:'r l',ex:'red, leg',s:3,e:6},
+ {l:'sh ch',ex:'ship, chip',s:3.5,e:7},{l:'j',ex:'jump',s:4,e:7},{l:'th',ex:'thin',s:4.5,e:7},
+ {l:'s',ex:'sun',s:3,e:8},{l:'z',ex:'zoo',s:3.5,e:8},{l:'v',ex:'van',s:4,e:8},{l:'th',ex:'the',s:5,e:8},{l:'zh',ex:'measure',s:6,e:8.5}
+];
+function visSounds(m,name){
+  const W=visW(),lab=W<420?116:136,top=8,rowH=22,x0=1.5,x1=9;
+  const X=y=>lab+(y-x0)/(x1-x0)*(W-lab-14);
+  const H=top+28+soundRows.length*rowH+24,ay=H-20,yrs=m==null?null:m/12;let g='';
+  for(let t=2;t<=9;t++)g+=`<line x1="${X(t)}" y1="${top+26}" x2="${X(t)}" y2="${ay}" stroke="var(--line)" stroke-width="1" opacity=".6"/>`+sT(X(t),ay+11,t+(t===9?' yrs':''),{a:'middle',s:11,c:'var(--muted)'});
+  soundRows.forEach((r,i)=>{const y=top+30+i*rowH;
+    const st=yrs==null?'n':yrs>=r.e?'have':yrs>=r.s?'learn':'early';
+    g+=`<text x="${lab-8}" y="${y+rowH/2-1}" text-anchor="end" dominant-baseline="middle" font-size="12"><tspan font-weight="600" fill="var(--ink)">${escH(r.l)}</tspan><tspan fill="var(--muted)" font-size="${W<420?9.5:11}"> ${escH(r.ex)}</tspan></text>`;
+    const fill=st==='have'?'var(--accent)':st==='learn'?'var(--accent-soft)':st==='early'?'none':'var(--accent-soft)';
+    const stroke=st==='learn'?'var(--accent)':st==='early'?'var(--muted)':'none';
+    g+=`<rect x="${X(r.s)}" y="${y+4}" width="${X(r.e)-X(r.s)}" height="${rowH-9}" rx="4" fill="${fill}" stroke="${stroke}" stroke-width="1.5"${st==='early'?' stroke-dasharray="4 3"':''}><title>${escH(r.l+' ('+r.ex+'): children start using it around '+r.s+', and about 9 in 10 have it by '+r.e)}</title></rect>`;
+  });
+  if(yrs!=null&&yrs>=x0&&yrs<=x1)g+=childMark(X(yrs),top,ay,name+' '+ageText(m),W);
+  const leg=yrs==null?legend([['lg-learn','Bar starts when most children begin; ends when nearly all (9 in 10) have it']]):legend([['lg-have','Most children have it by now'],['lg-learn','Still learning (normal)'],['lg-early','Too early to expect']]);
+  return `<div class="vis"><p class="vis-h">When children usually get each sound</p>${leg}${svgBox(W,H,'Age ranges for learning each speech sound',g)}${yrs!=null&&yrs>x1?`<p class="vis-n">${escH(name)} is past the end of this chart: all sounds are expected.</p>`:''}</div>`;
+}
+function visIntell(m,name){
+  const rows=[[M(2),M(3),'2–3 yrs',62,'About half to three-quarters'],[M(3),M(4),'3–4 yrs',80,'About 80%'],[M(4),M(19),'4 yrs +',100,'Usually understood, even with some errors']];
+  return `<div class="vis"><p class="vis-h">How much a stranger understands</p>${rows.map(([a,b,l,p,t])=>{const cur=m!=null&&m>=a&&m<b;
+    return `<div class="ibar${cur?' cur':''}"><span class="il">${l}${cur?` <b class="here">${escH(name)}</b>`:''}</span><span class="it"><span style="width:${p}%"></span></span><span class="iv">${t}</span></div>`;}).join('')}</div>`;
+}
+// vertical timeline (HTML) used by processes and feeding
+function vtl(title,items,m,name,doneLabel){
+  let out=`<div class="vis"><p class="vis-h">${escH(title)}</p><ol class="vtl">`,placed=m==null;
+  items.forEach(it=>{
+    if(!placed&&m<it.at){out+=`<li class="vme"><span class="dot"></span><span class="here">${escH(name)} is here · ${escH(ageText(m))}</span></li>`;placed=true;}
+    const done=m!=null&&m>=it.at;
+    out+=`<li class="${done?'done':''}"><span class="dot"></span><div><p class="vl">${escH(it.label)}${done&&doneLabel?` <span class="ok">${doneLabel}</span>`:''}</p>${it.html}</div></li>`;
+  });
+  if(!placed)out+=`<li class="vme"><span class="dot"></span><span class="here">${escH(name)} is here · ${escH(ageText(m))}</span></li>`;
+  return out+'</ol></div>';
+}
+const procs=[
+ {at:M(3),label:'Gone by 3',p:[['Repeating syllables','"wawa" for water'],['Matching sounds','"gog" for dog'],['Stopping f and s','"tun" for sun']]},
+ {at:M(4),label:'Gone by 4',p:[['Leaving off end sounds','"ca" for cat'],['Front for back sounds','"tar" for car'],['Dropping weak syllables','"nana" for banana'],['Simplifying blends','"poon" for spoon']]},
+ {at:M(5),label:'Gone by 5',p:[['t or d for th','"tum" for thumb']]},
+ {at:M(6),label:'Gone by 6',p:[['w for r or l','"wabbit" for rabbit']]},
+ {at:M(8),label:'Gone by 8',p:[['Adding extra vowels','"buh-lue" for blue']]}
+];
+const visProcs=(m,name)=>vtl('Sound patterns and when they usually stop',procs.map(x=>({at:x.at,label:x.label,html:`<div class="pchips">${x.p.map(([a,b])=>`<span class="pchip">${escH(a)} <em>${escH(b)}</em></span>`).join('')}</div>`})),m,name,'should be gone now');
+// MLU (Miller & Chapman 1981, via Shipley & McAfee Table 7-8)
+const mlu=[[18,1.31,.99,1.64],[21,1.62,1.23,2.01],[24,1.92,1.47,2.37],[27,2.23,1.72,2.74],[30,2.54,1.97,3.11],[33,2.85,2.22,3.48],[36,3.16,2.47,3.85],[39,3.47,2.71,4.23],[42,3.78,2.96,4.6],[45,4.09,3.21,4.97],[48,4.4,3.46,5.34],[51,4.71,3.71,5.71],[54,5.02,3.96,6.08],[57,5.32,4.2,6.45],[60,5.63,4.44,6.82]];
+function visMlu(m,name){
+  const W=visW(),L=34,R=14,top=8,H=230,b=H-24,t=top+28;
+  const X=mm=>L+(mm-18)/42*(W-L-R),Y=v=>b-(v/7)*(b-t);let g='';
+  for(let v=0;v<=7;v++)g+=`<line x1="${L}" y1="${Y(v)}" x2="${W-R}" y2="${Y(v)}" stroke="var(--line)" opacity="${v?'.5':'1'}"/>`+(v%2?'':sT(L-6,Y(v),v,{a:'end',s:11,c:'var(--muted)'}));
+  [18,24,36,48,60].forEach(mm=>g+=sT(X(mm),b+12,mm===18?'1½':String(mm/12)+(mm===60?' yrs':''),{a:'middle',s:11,c:'var(--muted)'}));
+  const band=mlu.map(r=>`${X(r[0])},${Y(r[3])}`).join(' ')+' '+mlu.slice().reverse().map(r=>`${X(r[0])},${Y(r[2])}`).join(' ');
+  g+=`<polygon points="${band}" fill="var(--accent-soft)"/>`;
+  g+=`<polyline points="${mlu.map(r=>`${X(r[0])},${Y(r[1])}`).join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2"/>`;
+  mlu.forEach(r=>g+=`<circle cx="${X(r[0])}" cy="${Y(r[1])}" r="9" fill="transparent"><title>${escH(`${Math.floor(r[0]/12)}y ${r[0]%12}m: average ${r[1]}, most children ${r[2]}–${r[3]}`)}</title></circle>`);
+  let note='';
+  if(m!=null&&m>=18&&m<=60){const i=mlu.findIndex(r=>r[0]>=m),r=mlu[Math.max(0,i)];g+=childMark(X(m),top,b,name+' '+ageText(m),W);note=`<p class="vis-n">Around ${escH(name)}'s age, most children average about <b>${r[2]}–${r[3]}</b> word parts per sentence.</p>`;}
+  else if(m!=null&&m>60)note=`<p class="vis-n">${escH(name)} is past the end of this chart (to age 5).</p>`;
+  return `<div class="vis"><p class="vis-h">How long sentences usually are</p>${legend([['lg-line','Average'],['lg-learn','Where most children (2 in 3) fall']])}${svgBox(W,H,'Average sentence length by age',g)}<p class="vis-n">Counted in word parts, so "dogs" counts as 2 (dog + s).</p>${note}</div>`;
+}
+const vocab=[[M(0,7),M(1),'7–12 months',1,3],[M(1),M(1,7),'12–18 months',3,20],[M(1,7),M(2),'18–24 months',50,100],[M(2),M(3),'2–3 years',50,250],[M(3),M(4),'3–4 years',800,1500],[M(4),M(5),'4–5 years',900,2000]];
+function visVocab(m,name){
+  const W=visW(),lab=W<420?88:110,top=8,rowH=24,H=top+28+vocab.length*rowH+24,ay=H-20;
+  const X=v=>lab+Math.log10(v)/Math.log10(3000)*(W-lab-60);let g='';
+  [1,10,100,1000].forEach(v=>g+=`<line x1="${X(v)}" y1="${top+26}" x2="${X(v)}" y2="${ay}" stroke="var(--line)" opacity=".6"/>`+sT(X(v),ay+11,v.toLocaleString(),{a:'middle',s:11,c:'var(--muted)'}));
+  vocab.forEach(([a,b,l,lo,hi],i)=>{const y=top+30+i*rowH,cur=m!=null&&m>=a&&m<b;
+    g+=sT(lab-8,y+rowH/2-1,l,{a:'end',s:W<420?10.5:12,c:cur?'var(--ink)':'var(--muted)',w:cur?600:null});
+    g+=`<rect x="${X(lo)}" y="${y+4}" width="${Math.max(6,X(hi)-X(lo))}" height="${rowH-10}" rx="4" fill="${cur?'var(--accent)':'var(--accent-soft)'}"><title>${escH(l+': about '+lo+'–'+hi+'+ words')}</title></rect>`+sT(X(hi)+6,y+rowH/2-1,lo+'–'+hi.toLocaleString()+'+',{s:11,c:'var(--muted)'});});
+  if(m!=null&&m>=M(0,7)&&m<M(5))g+=sT(lab,top+12,escH(name)+'\'s age band is highlighted',{s:11.5,c:'var(--muted)'});
+  return `<div class="vis"><p class="vis-h">How many words children say</p>${svgBox(W,H,'Number of words children say at each age',g)}<p class="vis-n">Each step on the scale is 10 times bigger, because vocabulary grows so fast.</p></div>`;
+}
+// staircase (HTML) for sound awareness and theory of mind
+function stairs(title,steps,m,name){
+  const cur=m==null?-1:steps.reduce((k,s,i)=>m>=s.at?i:k,-1);
+  return `<div class="vis"><p class="vis-h">${escH(title)}</p><ol class="stairs">${steps.map((s,i)=>`<li class="${i<=cur?'done':''}${i===cur?' cur':''}" style="--i:${i}"><span class="sa">${escH(s.age)}</span><span class="st">${escH(s.t)}</span>${i===cur?`<span class="here">${escH(name)}</span>`:''}</li>`).join('')}</ol>${m!=null&&cur<0?`<p class="vis-n">${escH(name)} is younger than the first step.</p>`:''}</div>`;
+}
+const paSteps=[{at:M(3),age:'3 yrs',t:'Rhymes and same first sounds (cat–bat, my milk)'},{at:M(4),age:'4 yrs',t:'Words in a sentence, claps syllables (cow-boy)'},{at:M(5),age:'5 yrs',t:'Hears the first sound and blends it (b-at)'},{at:M(6),age:'6 yrs',t:'Blends 2–3 sounds into a word (c-a-t)'},{at:M(7),age:'7 yrs',t:'Counts, blends and separates every sound'},{at:M(8),age:'8 yrs',t:'Moves and deletes sounds, even in blends'}];
+const tomSteps=[{at:M(3),age:'3 yrs',t:'Names basic feelings and what caused them'},{at:M(5),age:'5 yrs',t:'Knows people can believe things that aren\'t true'},{at:M(6),age:'6 yrs',t:'Knows people can look one way and feel another'},{at:M(7),age:'7 yrs',t:'Understands "Mum thinks Dad thinks…"; jealousy, guilt, embarrassment'}];
+const feedSteps=[{at:0,label:'Birth',html:'<p class="vd">Reflex suck and swallow</p>'},{at:M(0,3),label:'3–4 months',html:'<p class="vd">Long runs of sucking, well coordinated</p>'},{at:M(0,5),label:'5–6 months',html:'<p class="vd">Up-and-down munching bite</p>'},{at:M(0,7),label:'7–8 months',html:'<p class="vd">Tongue starts moving food sideways; first cup sips</p>'},{at:M(0,9),label:'9–12 months',html:'<p class="vd">Chews side to side, finger feeds, cup with spills</p>'},{at:M(1),label:'12–18 months',html:'<p class="vd">Moves to a cup; scoops with a spoon</p>'},{at:M(1,6),label:'18–24 months',html:'<p class="vd">Mostly feeds self; chews most textures</p>'}];
+const riskItems=['Going on for 6 months or more','Started before 3rd birthday','Boy','Extra movements or tension','Other speech or language difficulties','Child or family worried'];
+function visStutter(){
+  const n=riskItems.filter((r,i)=>state['srisk'+i]).length;
+  return `<div class="vis"><p class="vis-h">Typical bumps or stuttering?</p><div class="spec"><div class="sp-a"><p class="vl">Usually typical</p><p class="ex">"um, uh" · "I want–I want a drink" · "I want, I need…"</p></div><div class="sp-arrow" aria-hidden="true"></div><div class="sp-b"><p class="vl">More like stuttering</p><p class="ex">"b-b-ball" · "I-I-I" · "sssssun" · stuck, no sound</p></div></div></div>
+  <div class="vis"><p class="vis-h">More likely to need help: tick what applies</p><div class="risk">${riskItems.map((r,i)=>`<label class="chip"><input type="checkbox" data-k="srisk${i}"${state['srisk'+i]?' checked':''}><span>${escH(r)}</span></label>`).join('')}</div>
+   <div class="meter" aria-label="${n} of ${riskItems.length}">${riskItems.map((r,i)=>`<span class="${i<n?'on':''}"></span>`).join('')}</div><p class="vis-n"><b id="riskN">${n} of ${riskItems.length}</b> apply. The more that apply, the more likely stuttering will need support. Saved to this child's file.</p></div>`;
+}
+
+const narrSteps=[{at:M(2),age:'2–3',t:'Talks about own experiences'},{at:M(3),age:'3–4',t:'Two events in order; one main idea'},{at:M(4),age:'4–5',t:'A chain of events, no clear point yet'},{at:M(5),age:'5–6',t:'Retells a story accurately, with details'},{at:M(6),age:'6–7',t:'Problem and solution; beginning, middle, end'},{at:M(8),age:'8–9',t:'Feelings, reasons and predictions'},{at:M(10),age:'10+',t:'Character and plot development'}];
+const storyParts=[['Setting','Who is it about? Where?'],['Problem','What happened to them?'],['Feeling','How did they feel about it?'],['Try','What did they do to fix it?'],['Outcome','What happened in the end?'],['Reaction','How did they feel at the end?']];
+function visNarr(m,name){
+  const n=storyParts.filter((p,i)=>state['nst'+i]).length;
+  return stairs('How storytelling grows',narrSteps,m,name)+
+  `<div class="vis"><p class="vis-h">The parts of a story</p><ol class="sparts">${storyParts.map(([a,b],i)=>`<li><span class="sp-n">${i+1}</span><span class="sp-t">${a}</span><span class="sp-q">${escH(b)}</span></li>`).join('')}</ol>
+   <p class="vis-n">Younger children usually tell the setting and a few events. A full story with a problem, attempt and outcome comes in the early school years.</p></div>
+   <div class="vis"><p class="vis-h">Story check: tick the parts ${escH(name)} included in a retell</p><div class="risk">${storyParts.map(([a],i)=>`<label class="chip"><input type="checkbox" data-k="nst${i}"${state['nst'+i]?' checked':''}><span>${a}</span></label>`).join('')}</div>
+   <div class="meter green" aria-label="${n} of 6 story parts">${storyParts.map((p,i)=>`<span class="${i<n?'on':''}"></span>`).join('')}</div>
+   <p class="vis-n"><b>${n} of 6</b> parts. Saved to this child's file. Good prompts: a wordless picture book, retelling a favourite story, or "tell me about something that happened to you".</p>
+   <details class="prompts"><summary>Questions to ask after a story</summary><ul><li>Who was in the story? Where did it happen?</li><li>What was the problem? How was it solved?</li><li>What happened in the end?</li><li>How do you think they felt? Why?</li><li>What would you have done?</li></ul></details></div>`;
+}
+function domainVis(id,m,name){
+  if(id==='narr')return visNarr(m,name);
+  if(id==='speech')return visIntell(m,name)+visSounds(m,name)+visProcs(m,name);
+  if(id==='lang')return visVocab(m,name)+visMlu(m,name);
+  if(id==='lit')return stairs('Sound skills build step by step',paSteps,m,name);
+  if(id==='social')return stairs('Understanding other people\'s minds',tomSteps,m,name);
+  if(id==='feed')return vtl('Eating and drinking in the first 2 years',feedSteps,m,name,'');
+  if(id==='fluency')return visStutter();
+  return '';
+}
+
+let normDomain='now',normAge=null,normAll=false;
+function ageMonths(){return normAge!=null?normAge:dobAge(state);}
+const ageText=m=>m==null?'':(Math.floor(m/12)?Math.floor(m/12)+'y ':'')+(m%12)+'m';
+const bandFor=(d,m)=>d.bands?d.bands.findIndex(b=>m>=b.from&&m<b.to):-1;
+function bandHtml(b,cur,name){
+  return `<div class="nb${cur?' cur':''}"><p class="nb-l">${escH(b.label)}${cur?` <span class="here">${escH(name)} is here</span>`:''}</p>
+   <ul>${b.items.map(i=>`<li>${escH(i)}</li>`).join('')}</ul>
+   ${b.gone?`<p class="gone">${escH(b.gone)}</p>`:''}${b.flag?`<p class="flag">${escH(b.flag)}</p>`:''}</div>`;
+}
+function renderNorms(){
+  const m=ageMonths(),name=(state.childName||'').trim()||'Your child';
+  const opts=[['','Use date of birth']];for(let y=0;y<=12;y++){if(y<2){[0,6].forEach(mm=>opts.push([M(y,mm),y?`${y}y ${mm}m`:`${mm} months`]))}else opts.push([M(y),y+' years']);}
+  $('#normAge').innerHTML=opts.map(([v,l])=>`<option value="${v}"${String(normAge??'')===String(v)?' selected':''}>${l}</option>`).join('');
+  $('#normWho').textContent=m==null?'Add a date of birth in the questionnaire, or pick an age to compare.':`${normAge!=null?'Comparing at':name+' is'} ${ageText(m)}${normAge!=null?'':' today'}.`;
+  const chips=[['now','At this age'],...domains.map(d=>[d.id,d.name])];
+  $('#normChips').innerHTML=chips.map(([id,l])=>`<button type="button" class="nchip" aria-pressed="${normDomain===id}" data-nd="${id}">${escH(l)}</button>`).join('');
+  let h='';
+  if(normDomain==='now'){
+    if(m==null){h='<p class="hint">Pick an age above to see what most children are doing.</p>';}
+    else{
+      h+=visOverview(m,name);
+      domains.forEach(d=>{
+        if(d.static){h+=`<div class="nb"><p class="nb-l">${escH(d.name)}</p><p class="hint" style="margin:0">${escH(d.note)} <button class="link" type="button" data-nd="${d.id}">See signs</button></p></div>`;return;}
+        const i=bandFor(d,m);if(i<0)return;const b=d.bands[i];
+        h+=`<div class="nb"><p class="nb-l">${escH(d.name)} <span class="muted">${escH(b.label)}</span></p><ul>${b.items.slice(0,3).map(x=>`<li>${escH(x)}</li>`).join('')}</ul>${b.flag?`<p class="flag">${escH(b.flag)}</p>`:''}<button class="link" type="button" data-nd="${d.id}">More</button></div>`;
+      });
+      if(!h)h='<p class="hint">No milestones for this age.</p>';
+    }
+  }else{
+    const d=domains.find(x=>x.id===normDomain);
+    h+=`<p class="hint">${escH(d.note)}</p>`+domainVis(d.id,m,name);
+    if(d.static){h+=(d.id==='fluency'?d.static.slice(0,2):d.static).map(s=>`<div class="nb"><p class="nb-l">${escH(s.h)}</p><ul>${s.items.map(i=>`<li>${escH(i)}</li>`).join('')}</ul></div>`).join('');}
+    else{
+      const i=m==null?-1:bandFor(d,m);
+      const show=normAll||i<0?d.bands.map((b,k)=>k):[i-1,i,i+1].filter(k=>k>=0&&k<d.bands.length);
+      h+='<p class="vis-h" style="margin-top:1.4rem">What most children are doing</p>'+show.map(k=>bandHtml(d.bands[k],k===i,name)).join('');
+      if(i>=0)h+=`<button class="link" type="button" id="normAllBtn">${normAll?'Show nearby ages only':'Show all ages'}</button>`;
+    }
+    if(d.extra)h+=`<p class="hint" style="margin-top:1rem">${escH(d.extra)}</p>`;
+    h+=`<p class="src">Source: ${escH(d.src)}</p>`;
+  }
+  $('#normBody').innerHTML=h;
+}
+$('#tab-m').addEventListener('input',e=>{if(e.target.dataset.k&&/^(srisk|nst)/.test(e.target.dataset.k))setTimeout(renderNorms,0);});
+let rzT;window.addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(!$('#tab-m').hidden)renderNorms();},150);});
+$('#normAge').addEventListener('change',e=>{normAge=e.target.value===''?null:+e.target.value;renderNorms();});
+$('#tab-m').addEventListener('click',e=>{
+  const c=e.target.closest('[data-nd]');if(c){normDomain=c.dataset.nd;normAll=false;renderNorms();return;}
+  if(e.target.id==='normAllBtn'){normAll=!normAll;renderNorms();}
+});
+
+
+// ---------- PDF ----------
+function buildPdf(src){
+  const st=migrate(clone(src));
+  const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
+  const PW=210,M=14,W=PW-2*M,TOP=16,BOTTOM=281;
+  const C={ink:[31,46,58],muted:[100,114,122],line:[207,220,216],paper:[255,255,255],tint:[246,250,249],sun:[242,201,76],accent:[47,111,98],
+    pink:[194,84,107],pinkT:[246,221,227],pinkI:[122,42,59],blue:[47,100,150],blueT:[220,232,244],blueI:[30,68,104],
+    green:[47,122,82],greenT:[221,239,227],greenI:[31,86,56],grey:[107,123,132],greyT:[230,236,238],greyI:[52,67,76]};
+  let y=0;
+  const font=(s,b,c)=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(s);doc.setTextColor(...(c||C.ink));};
+  const lh=s=>s*0.43,fill=c=>doc.setFillColor(...c),stroke=c=>doc.setDrawColor(...c);
+  const wrap=(t,s,w,b)=>{font(s,b);return doc.splitTextToSize(String(t),w);};
+  const newPage=()=>{doc.addPage();y=TOP;};
+  const need=h=>{if(y+h>BOTTOM)newPage();};
+  const name=(st.childName||'').trim(),first=name.split(/\s+/)[0]||'your child';
+  const lines=(t,w)=>has(t)?wrap(t,9.5,w-6):['—'];
+  const boxH=(t,w,min)=>Math.max(min||16,8.5+lines(t,w).length*lh(9.5)+3);
+  function box(x,yy,w,h,title,t,tone){
+    fill(C.paper);stroke(C[tone+'T']);doc.setLineWidth(.7);doc.roundedRect(x,yy,w,h,2.4,2.4,'FD');
+    fill(C[tone+'T']);doc.roundedRect(x,yy,w,6.6,2.4,2.4,'F');doc.rect(x,yy+3.3,w,3.3,'F');
+    font(8.3,true,C[tone+'I']);doc.text(doc.splitTextToSize(title,w-4)[0],x+w/2,yy+4.5,{align:'center'});
+    font(9.5,false,has(t)?C.ink:C.muted);let ty=yy+11;lines(t,w).forEach(l=>{doc.text(l,x+3,ty);ty+=lh(9.5);});
+  }
+  function row(items,ratios,min){
+    ratios=ratios||items.map(()=>1);const gap=3,tot=ratios.reduce((a,b)=>a+b,0),avail=W-gap*(items.length-1),ws=ratios.map(r=>avail*r/tot);
+    const h=Math.max(...items.map((it,i)=>boxH(it[1],ws[i],min)));
+    need(h+3);let x=M;items.forEach((it,i)=>{box(x,y,ws[i],h,it[0],it[1],it[2]);x+=ws[i]+gap;});y+=h+3;
+  }
+  function band(title,tone,keep){need(keep||30);fill(C[tone]);doc.roundedRect(M,y,W,7,2,2,'F');font(9.5,true,C.paper);doc.text(title,M+3,y+4.8);y+=9.5;}
+  function pageTitle(t,sub){
+    fill(C.accent);doc.rect(0,0,PW,24,'F');
+    font(16,true,C.paper);doc.text(t,M,11.5);
+    font(9,false,[214,234,228]);doc.text(sub,M,18.5);y=31;
+  }
+  const chipsText=(arr,key,other)=>[...arr.filter((r,i)=>st[key+i]),...(has(st[other])?[st[other]]:[])].join(', ');
+
+  // ---- Page 1: Getting to know you
+  pageTitle('Getting to know you and your family',[name||'Client',st.dob?'DOB '+fmtDate(st.dob):'',has(st.filledBy)?'Respondent: '+st.filledBy+(has(st.relation)?' ('+st.relation+')':''):'',st.date?'Initial assessment '+fmtDate(st.date):''].filter(Boolean).join('   ·   '));
+  const areas=helpOrder.filter(i=>st['help'+i]).map(i=>helpShort[i]);
+  band("What's important to you?",'pink');
+  row([['What brings you in today?',[st.brings,areas.length?'Areas: '+areas.join(', '):''].filter(has).join('\n\n'),'pink'],['What would you love to see change?',st.hopes,'pink']],[2,1],22);
+  band('About you and your family','blue');
+  row([['Who is in your family?',st.family,'blue'],['Family and culture',st.culture,'blue']]);
+  row([['What should we know about your child?',st.strengths,'blue'],['Languages at home',st.langs,'blue']]);
+  band('How we fit in','green');
+  row([['What does your week look like? Your child\'s week?',st.week,'green'],['Who do you see during the week?',st.people,'green'],['Other services or supports?',st.services,'green']],[1.3,1,1]);
+  band('Background','grey');
+  row([['Diagnoses',st.bgDiag,'grey'],['Health, hearing, vision',st.bgHealth,'grey'],['Development',st.bgDev,'grey']]);
+  row([['Feeding and sleep',st.bgFeed,'grey'],['Kindy / school',st.bgSchool,'grey'],['Previous therapy',st.bgTherapy,'grey']]);
+
+  // ---- Page 2: Working together
+  doc.addPage();pageTitle('Our goals and how we will work together',name||'Client');
+  row([['What happens in our service',st.service,'pink'],['Speech pathologist contact',st.contact,'pink'],['Appointments we\'ll book in',st.appointments,'pink']],[2,1,1],22);
+  need(10);font(10,true,C.blue);doc.text('Working as a team in and out of sessions, our roles are:',M,y+3);y+=7;
+  row([['Therapist',st.roleTherapist,'blue'],['Caregivers',st.roleCaregivers,'blue'],['Others',st.roleOthers,'blue']],null,30);
+  row([['How you\'d like to be part of sessions',chipsText(involve,'involve','involveOther'),'blue'],['Good times of day for practising',chipsText(routines,'routine','routineOther'),'blue']]);
+  row([['Our plan for checking in',st.checkPlan,'green']]);
+
+  // ---- Goal pages
+  const goals=st.gs.filter(g=>has(g.title)||has(g.now)||has(g.plan)||(g.checkins||[]).length);
+  goals.forEach((g,gi)=>{
+    doc.addPage();pageTitle('Goal '+(gi+1)+(g.achieved?'  ·  Achieved':''),name||'Client');
+    // goal band
+    const tl=wrap(has(g.title)?g.title:'—',12,W-40,true),gh=Math.max(14,tl.length*lh(12)+8);
+    fill(C.paper);stroke(C.pinkT);doc.setLineWidth(.7);doc.roundedRect(M,y,W,gh,2.4,2.4,'FD');
+    fill(C.pinkT);doc.roundedRect(M,y,30,gh,2.4,2.4,'F');doc.rect(M+26,y,4,gh,'F');
+    font(9,true,C.pinkI);doc.text('GOAL',M+3,y+6);font(7.5,false,C.pinkI);doc.text('This is our priority',M+3,y+10);
+    font(12,true);let ty=y+7;tl.forEach(l=>{doc.text(l,M+34,ty);ty+=lh(12);});y+=gh+3;
+    if(has(g.words))row([['In '+first+'\'s words',g.words,'pink']]);
+    row([['Where are we now?',g.now,'blue'],['What are we working towards (long-term goal)?',g.longTerm,'blue']],null,24);
+    // line
+    need(14);const lx=M+24,lw=W-72,ly=y+5,X=v=>lx+(v-1)/9*lw*.96;
+    font(8.5,true,C.blue);doc.text('At the start',M,ly+1.2);doc.text('We have achieved this goal',PW-M,ly+1.2,{align:'right'});
+    stroke(C.blue);doc.setLineWidth(.8);doc.line(lx,ly,lx+lw,ly);fill(C.blue);doc.triangle(lx+lw,ly-1.8,lx+lw+3,ly,lx+lw,ly+1.8,'F');
+    const cs=ciSorted(g).filter(c=>c.pos);
+    if(g.base){fill(cs.length?C.paper:C.sun);stroke(C.muted);doc.setLineWidth(.6);doc.circle(X(g.base),ly,1.7,cs.length?'FD':'F');}
+    cs.forEach((c,i)=>{if(i===cs.length-1){fill(C.sun);doc.circle(X(c.pos),ly,2.4,'F');}else{fill(C.blue);doc.circle(X(c.pos),ly,1.5,'F');}});
+    const sum=[g.base?'Start '+g.base+'/10':'',cs.length?'Latest '+cs[cs.length-1].pos+'/10 ('+shortDate(cs[cs.length-1].date)+')':''].filter(Boolean).join('   ›   ');
+    if(sum){font(8,false,C.muted);doc.text(sum,lx,ly+5.5);}
+    y=ly+9;
+    const sm=g.smart||{},stmt=(has(sm.will)||has(sm.measure)||has(sm.by))?`Goal statement: By ${sm.by?fmtDate(sm.by):'__'}, ${first} will ${sm.will||'__'} as measured by ${sm.measure||'__'}.`:'';
+    row([['Our plan: short-term goals and home activities',[g.plan,stmt].filter(has).join('\n\n'),'blue']],null,24);
+    const all=ciSorted(g);
+    if(all.length){
+      band('Check in','green',24);
+      for(let i=0;i<all.length;i+=2){
+        const pair=all.slice(i,i+2).map((c,k)=>['Check in '+(i+k+1)+(c.date?'  ·  '+fmtDate(c.date):'')+(c.pos?'  ·  Line '+c.pos+'/10':''),c.notes,'green']);
+        if(pair.length===1)pair.push(['',' ','green']);
+        row(pair);
+      }
+    }
+  });
+
+  const n=doc.getNumberOfPages();
+  for(let i=1;i<=n;i++){doc.setPage(i);stroke(C.line);doc.setLineWidth(.3);doc.line(M,287,PW-M,287);
+    font(8,false,C.muted);doc.text((name?name+'  ·  ':'')+'Working Together',M,292);doc.text('Page '+i+' of '+n,PW-M,292,{align:'right'});}
+  return doc.output('blob');
+}
+$('#printBtn').onclick=async()=>{
+  try{
+    if(!window.jspdf)throw new Error('nolib');
+    if(dirty){clearTimeout(timer);persist();}
+    const blob=buildPdf(state);
+    const fname=((state.childName||'client').trim().replace(/[^\w\- ]+/g,'')||'client')+' - goals file.pdf';
+    await saveFile(fname,blob);setStatus('PDF saved');
+  }catch(e){if(e&&e.code==='declined')return;setStatus('Couldn\'t make the PDF. Try again.');}
+};
+$('#delBtn').onclick=async()=>{
+  if(!await ask('Delete this whole client file? This can\'t be undone.','Delete file'))return;
+  const id=currentId;clearTimeout(timer);dirty=false;
+  delete forms[id];local.del(id);if(col){try{await col.doc(id).delete();}catch(e){}}
+  currentId=null;renderList();show('home');
+};
+initStore();
+</script>
+</body>
+</html>
