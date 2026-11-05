@@ -472,6 +472,20 @@ dialog#askDlg::backdrop{background:rgba(20,30,35,.45)}
 .localnote b{font-weight:600}
 .backup{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem 1.2rem;margin-top:1.4rem;padding-top:1rem;border-top:1px solid var(--line)}
 .backup label.link{cursor:pointer}
+
+/* prompts inside empty boxes */
+textarea.ph-prompts::placeholder{color:#A3AFB5;font-size:.84rem;line-height:1.5;opacity:1}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) textarea.ph-prompts::placeholder{color:#6F7F87}}
+.oval textarea.ph-prompts{text-align:left;padding:1.6rem 2rem}
+.goalbox textarea.ph-prompts::placeholder{font-weight:400}
+.tog{display:inline-flex;align-items:center;gap:.4rem;font:inherit;font-size:.85rem;font-weight:600;color:var(--muted);background:none;border:0;cursor:pointer;padding:.3rem .2rem;white-space:nowrap}
+.tog .sw{position:relative;width:2rem;height:1.15rem;border-radius:999px;background:var(--line);transition:background .15s}
+.tog .sw::after{content:"";position:absolute;top:2px;left:2px;width:calc(1.15rem - 4px);height:calc(1.15rem - 4px);border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform .15s}
+.tog[aria-pressed="true"]{color:var(--accent)}
+.tog[aria-pressed="true"] .sw{background:var(--accent)}
+.tog[aria-pressed="true"] .sw::after{transform:translateX(.85rem)}
+@media (prefers-reduced-motion:reduce){.tog .sw,.tog .sw::after{transition:none}}
+@media (max-width:640px){.tog .tl{display:none}}
 </style>
 </head>
 <body>
@@ -499,6 +513,7 @@ dialog#askDlg::backdrop{background:rgba(20,30,35,.45)}
       <button type="button" role="tab" data-tab="m" aria-selected="false" aria-controls="tab-m"><span class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20v-8"/><path d="M12 12c0-3 2-5 5-5 0 3-2 5-5 5z"/><path d="M12 14c0-2.5-1.7-4-4-4 0 2.5 1.7 4 4 4z"/><path d="M8 20h8"/></svg></span><span class="lg">Milestones</span><span class="sh">Milestones</span></button>
     </nav>
     <span class="status" id="status" aria-live="polite"></span>
+    <button type="button" class="tog" id="promptTog" aria-pressed="true" title="Show conversation prompts in empty boxes"><span class="sw" aria-hidden="true"></span><span class="tl">Prompts</span></button>
     <button class="btn small ghost" type="button" id="printBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>PDF</button>
     <div class="menu"><button class="iconbtn" type="button" id="moreBtn" aria-haspopup="true" aria-expanded="false" aria-label="More options"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg></button>
       <div class="menu-pop" id="morePop" role="menu" hidden><button type="button" role="menuitem" id="editBtn" class="plain">Edit client details</button><button type="button" role="menuitem" id="delBtn">Delete this client file</button></div></div>
@@ -956,6 +971,28 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closePrompts();});
 window.addEventListener('resize',closePrompts);
 let popY=0;window.addEventListener('scroll',()=>{if(!$('#pop').hidden&&Math.abs(window.scrollY-popY)>80)closePrompts();});
 document.querySelectorAll('#tab-q [data-pk],#tab-w [data-pk]').forEach(l=>l.insertAdjacentHTML('afterend',pqBtn(l.dataset.pk,l.textContent)));
+
+// ---------- prompts shown inside empty boxes ----------
+let showPrompts=true;try{showPrompts=localStorage.getItem('wt.prompts')!=='off';}catch(e){}
+const GF2P={title:'goal',words:'words',now:'now',longTerm:'longTerm',plan:'plan','ci.notes':'checkin'};
+const basePh=new WeakMap();
+function promptKey(t){
+  if(t.dataset.gf)return GF2P[t.dataset.gf]||null;
+  const box=t.closest('.box');const l=box&&box.querySelector('[data-pk]');return l?l.dataset.pk:null;
+}
+function promptText(k){const p=PR[k];return [...p.q,...(p.q2||[])].map(x=>'• '+x).join('\n');}
+function applyPrompts(){
+  document.querySelectorAll('#form .sheetpage textarea').forEach(t=>{
+    const k=promptKey(t);if(!k||!PR[k])return;
+    if(!basePh.has(t))basePh.set(t,t.getAttribute('placeholder')||'');
+    t.placeholder=showPrompts?promptText(k):basePh.get(t);
+    t.classList.toggle('ph-prompts',showPrompts);
+  });
+  const b=$('#promptTog');b.setAttribute('aria-pressed',String(showPrompts));b.title=showPrompts?'Hide prompts in empty boxes':'Show conversation prompts in empty boxes';
+}
+$('#promptTog').onclick=()=>{showPrompts=!showPrompts;try{localStorage.setItem('wt.prompts',showPrompts?'on':'off');}catch(e){}applyPrompts();};
+const _renderGoal=renderGoal;renderGoal=function(){_renderGoal();applyPrompts();};
+applyPrompts();
 
 // ---------- milestones ----------
 // Paraphrased from: Shipley & McAfee, Assessment in Speech-Language Pathology (tables 6-7, 7-1, 7-8, 7-11, 8-1, 8-2, 10-2, 10-3, 12-1; fig 6-1);
